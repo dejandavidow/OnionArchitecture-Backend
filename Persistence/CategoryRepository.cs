@@ -14,7 +14,28 @@ internal sealed class CategoryRepository : ICategoryRepository
     {
         _dbContext=dbContext;
     }
-
+    public Task<int> FilterCountAsync(string letter)
+    {
+        return _dbContext.Categories.Where(x => x.Name.StartsWith(letter)).CountAsync();
+    }
+    public async Task<IEnumerable<Category>> FilterAsync(CategoryParams categoryParams,string letter)
+    {
+        return (await _dbContext.Categories.AsNoTracking().Where(x => x.Name.StartsWith(letter))
+          .OrderBy(x => x.Name)
+          .Skip((categoryParams.PageNumber - 1) * categoryParams.PageSize)
+          .Take(categoryParams.PageSize)
+          .ToListAsync())
+          .Select(category => new Category(category.Id, category.Name));
+    }
+    public async Task<IEnumerable<Category>> SearchAsync(CategoryParams categoryParams, string search)
+    {
+        return (await _dbContext.Categories.AsNoTracking().Where(x => x.Name.Contains(search))
+           .OrderBy(x => x.Name)
+           .Skip((categoryParams.PageNumber - 1) * categoryParams.PageSize)
+           .Take(categoryParams.PageSize)
+           .ToListAsync())
+           .Select(category => new Category(category.Id, category.Name));
+    }
     public async Task<Category> GetCategoryById(Guid id, CancellationToken cancellationToken = default)
     {
         var domaincategory = await _dbContext.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id,cancellationToken);
@@ -25,10 +46,14 @@ internal sealed class CategoryRepository : ICategoryRepository
         return new Category(domaincategory.Id,domaincategory.Name);
     }
 
-    public async Task<IEnumerable<Category>> GetCateroriesAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Category>> GetCateroriesAsync(CategoryParams categoryParams,CancellationToken cancellationToken = default)
     {
-        var domaincategories = (await _dbContext.Categories.AsNoTracking().ToListAsync(cancellationToken)).Select( category => new Category(category.Id,category.Name));
-        return domaincategories;
+        return (await _dbContext.Categories.AsNoTracking()
+           .OrderBy(x => x.Name)
+           .Skip((categoryParams.PageNumber - 1) * categoryParams.PageSize)
+           .Take(categoryParams.PageSize)
+           .ToListAsync(cancellationToken))
+           .Select(category => new Category(category.Id,category.Name));
     }
 
     public async Task InsertCategory(Category category, CancellationToken cancellationToken = default)

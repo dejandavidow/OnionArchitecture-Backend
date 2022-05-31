@@ -6,7 +6,10 @@ using Domain;
 
 public interface ICategoryRepository
 {
-Task<IEnumerable<Category>> GetCateroriesAsync(CancellationToken cancellationToken = default);
+    Task<int> FilterCountAsync(string letter);
+    Task<IEnumerable<Category>> FilterAsync(CategoryParams categoryParams, string letter);
+    Task<IEnumerable<Category>> SearchAsync(CategoryParams categoryParams,string search);
+Task<IEnumerable<Category>> GetCateroriesAsync(CategoryParams categoryParams,CancellationToken cancellationToken = default);
 Task<Category> GetCategoryById(Guid id,CancellationToken cancellationToken = default);
 void RemoveCategory(Category category);
 Task InsertCategory(Category category,CancellationToken cancellationToken = default);

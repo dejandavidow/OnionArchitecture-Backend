@@ -17,7 +17,30 @@ namespace Services
         {
             _repositoryManager = repositoryManager;
         }
-
+        public async Task<int> FilterCountAsync(string letter)
+        {
+            return await _repositoryManager.CategoryRepository.FilterCountAsync(letter);
+        }
+        public async Task<IEnumerable<CategoryDTO>> FilterAsync(CategoryParams categoryParams, string letter)
+        {
+            var categoriesdto = (await _repositoryManager.CategoryRepository.FilterAsync(categoryParams,letter))
+                .Select(category => new CategoryDTO()
+                {
+                    Id = category.Id.ToString(),
+                    Name = category.Name
+                });
+            return categoriesdto;
+        }
+        public async Task<IEnumerable<CategoryDTO>> SearchAsync(CategoryParams categoryParams, string search)
+        {
+            var categoriesdto = (await _repositoryManager.CategoryRepository.SearchAsync(categoryParams,search))
+                .Select(category => new CategoryDTO()
+            {
+                Id = category.Id.ToString(),
+                Name = category.Name
+            });
+            return categoriesdto;
+        }
         public async Task CreateAsync(CategoryDTO categoryDTO, CancellationToken cancellationToken = default)
         {
             try
@@ -53,9 +76,9 @@ namespace Services
             }
         }
 
-        public async Task<IEnumerable<CategoryDTO>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<CategoryDTO>> GetAllAsync(CategoryParams categoryParams,CancellationToken cancellationToken = default)
         {
-            var categoriesdto = (await _repositoryManager.CategoryRepository.GetCateroriesAsync(cancellationToken)).Select( category => new CategoryDTO(){
+            var categoriesdto = (await _repositoryManager.CategoryRepository.GetCateroriesAsync(categoryParams,cancellationToken)).Select( category => new CategoryDTO(){
             Id = category.Id.ToString(),
             Name = category.Name
             });

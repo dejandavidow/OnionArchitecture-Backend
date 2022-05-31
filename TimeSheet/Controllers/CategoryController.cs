@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using Contracts;
+using Domain;
 
 [ApiController]
 [Route("api/Category")]
@@ -14,10 +15,30 @@ public class CategoryController : ControllerBase
     {
         _serviceManager = serviceManager;
     }
-    [HttpGet]
-    public async Task<IActionResult> GetCategories(CancellationToken cancellationToken)
+    [HttpGet("count")]
+    public async Task<IActionResult> FilterCountCategories([FromQuery] string letter)
     {
-        var categories = await _serviceManager.CategoryService.GetAllAsync(cancellationToken);
+        var categories = await _serviceManager.CategoryService.FilterCountAsync(letter);
+        return Ok(categories);
+    }
+
+    [HttpGet("filter")]
+    public async Task<IActionResult> FilterCategories([FromQuery] CategoryParams categoryParams, string letter)
+    {
+        var categories = await _serviceManager.CategoryService.FilterAsync(categoryParams,letter);
+        return Ok(categories);
+    }
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchCategories([FromQuery] CategoryParams categoryParams,string search)
+    {
+        var categories = await _serviceManager.CategoryService.SearchAsync(categoryParams,search);
+        return Ok(categories);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetCategories([FromQuery] CategoryParams categoryParams,CancellationToken cancellationToken)
+    {
+        var categories = await _serviceManager.CategoryService.GetAllAsync(categoryParams,cancellationToken);
         return Ok(categories);
     }
     [HttpGet("{id}")]

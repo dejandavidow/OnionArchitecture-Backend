@@ -15,7 +15,6 @@ internal sealed class ClientRepository : IClientRepository
     {
         _dbContext = dbContext;
     }
-
     public async Task<int> GetFilterCount(string letter)
     {
         return await _dbContext.Clients.Where(x => x.ClientName.StartsWith(letter)).CountAsync();
@@ -118,6 +117,5 @@ internal sealed class ClientRepository : IClientRepository
             .Take(clientParams.PageSize)
             .ToListAsync(cancellationToken))
             .Select(client => new Client(client.Id, client.ClientName, client.Adress, client.City, client.PostalCode, client.Country));
-
     }
 }
