@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using Contracts;
+using Domain;
 
 [ApiController]
 [Route("api/Member")]
@@ -14,10 +15,34 @@ public class MemberController : ControllerBase
     {
         _serviceManager=serviceManager;
     }
-    [HttpGet]
-    public async Task<IActionResult> GetMembers(CancellationToken cancellationToken)
+    [HttpGet("search-count")]
+    public async Task<IActionResult> CountSearchMembers([FromQuery] string search)
     {
-        var members = await _serviceManager.MemberService.GetAllAsync(cancellationToken);
+        var members = await _serviceManager.MemberService.SearchCountAsync(search);
+        return Ok(members);
+    }
+    [HttpGet("filter-count")]
+    public async Task<IActionResult> CountFilterMembers([FromQuery] string letter)
+    {
+        var members = await _serviceManager.MemberService.FilterCountAsync(letter);
+        return Ok(members);
+    }
+    [HttpGet("filter")]
+    public async Task<IActionResult> FilterMembers([FromQuery] MemberParams memberParams, string letter)
+    {
+        var members = await _serviceManager.MemberService.FilterAsync(memberParams, letter);
+        return Ok(members);
+    }
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchMembers([FromQuery] MemberParams memberParams,string search)
+    {
+        var members = await _serviceManager.MemberService.SearchAsync(memberParams,search);
+        return Ok(members);
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetMembers([FromQuery] MemberParams memberParams,CancellationToken cancellationToken)
+    {
+        var members = await _serviceManager.MemberService.GetAllAsync(memberParams,cancellationToken);
         return Ok(members);
     }
     [HttpGet("{Id}")]

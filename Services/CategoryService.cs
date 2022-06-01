@@ -17,6 +17,10 @@ namespace Services
         {
             _repositoryManager = repositoryManager;
         }
+        public async Task<int> searchCountAsync(string search)
+        {
+            return await _repositoryManager.CategoryRepository.searchCountAsync(search);
+        }
         public async Task<int> FilterCountAsync(string letter)
         {
             return await _repositoryManager.CategoryRepository.FilterCountAsync(letter);

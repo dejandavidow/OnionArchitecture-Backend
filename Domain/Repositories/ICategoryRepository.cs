@@ -6,6 +6,7 @@ using Domain;
 
 public interface ICategoryRepository
 {
+    Task<int> searchCountAsync(string search);
     Task<int> FilterCountAsync(string letter);
     Task<IEnumerable<Category>> FilterAsync(CategoryParams categoryParams, string letter);
     Task<IEnumerable<Category>> SearchAsync(CategoryParams categoryParams,string search);

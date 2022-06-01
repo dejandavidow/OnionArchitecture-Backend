@@ -14,6 +14,14 @@ internal sealed class CategoryRepository : ICategoryRepository
     {
         _dbContext=dbContext;
     }
+    public Task<int> searchCountAsync(string search)
+    {
+        if(String.IsNullOrEmpty(search))
+        {
+            return _dbContext.Categories.CountAsync();
+        }
+        return _dbContext.Categories.Where(x => x.Name.StartsWith(search)).CountAsync();
+    }
     public Task<int> FilterCountAsync(string letter)
     {
         return _dbContext.Categories.Where(x => x.Name.StartsWith(letter)).CountAsync();

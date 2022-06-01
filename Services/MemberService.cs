@@ -17,6 +17,42 @@ namespace Services
         {
             _repositoryManager = repositoryManager;
         }
+        public async Task<int> SearchCountAsync(string search)
+        {
+            return await _repositoryManager.MemberRepository.SearchCountAsync(search);
+        }
+        public async Task<int> FilterCountAsync(string letter)
+        {
+            return await  _repositoryManager.MemberRepository.FilterCountAsync(letter);
+        }
+        public async Task<IEnumerable<MemberDTO>> FilterAsync(MemberParams memberParams, string letter)
+        {
+            var result = (await _repositoryManager.MemberRepository.FilterAsync(memberParams, letter)).Select(member => new MemberDTO()
+            {
+                Id = member.Id.ToString(),
+                Name = member.Name,
+                Username = member.Username,
+                Email = member.Email,
+                Hours = member.Hours,
+                Status = member.Status,
+                Role = member.Role
+            });
+            return result;
+        }
+        public async Task<IEnumerable<MemberDTO>> SearchAsync(MemberParams memberParams,string search)
+        {
+            var result = (await _repositoryManager.MemberRepository.SearchAsync(memberParams,search)).Select(member => new MemberDTO()
+            {
+                Id = member.Id.ToString(),
+                Name = member.Name,
+                Username = member.Username,
+                Email = member.Email,
+                Hours = member.Hours,
+                Status = member.Status,
+                Role = member.Role
+            });
+            return result;
+        }
         public async Task CreateAsync(MemberDTO memberDTO, CancellationToken cancellationToken = default)
         {
               try
@@ -52,9 +88,9 @@ namespace Services
             }
         }
 
-        public async Task<IEnumerable<MemberDTO>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<MemberDTO>> GetAllAsync(MemberParams memberParams,CancellationToken cancellationToken = default)
         {
-            var result = (await _repositoryManager.MemberRepository.GetMembersAsync(cancellationToken)).Select(member => new MemberDTO() {
+            var result = (await _repositoryManager.MemberRepository.GetMembersAsync(memberParams,cancellationToken)).Select(member => new MemberDTO() {
             Id = member.Id.ToString(),
             Name = member.Name,
             Username = member.Username,

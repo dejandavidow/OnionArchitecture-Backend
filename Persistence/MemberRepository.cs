@@ -15,6 +15,36 @@ internal sealed class MemberRepository : IMemberRepository
     {
         _dbContext = dbContext;
     }
+    public async Task<int> SearchCountAsync(string search)
+    {
+        if(String.IsNullOrEmpty(search))
+        {
+            return await _dbContext.Members.CountAsync();
+        }
+        return await _dbContext.Members.Where(x => x.Name.Contains(search)).CountAsync();
+    }
+    public async Task<int> FilterCountAsync(string letter)
+    {
+        return await _dbContext.Members.Where(x => x.Name.StartsWith(letter)).CountAsync();
+    }
+    public async Task<IEnumerable<Member>> FilterAsync(MemberParams memberParams, string letter)
+    {
+        return (await _dbContext.Members.Where(x => x.Name.StartsWith(letter)).AsNoTracking()
+         .OrderBy(x => x.Name)
+         .Skip((memberParams.PageNumber - 1) * memberParams.PageSize)
+         .Take(memberParams.PageSize)
+         .ToListAsync())
+         .Select(member => new Member(member.Id, member.Name, member.Username, member.Email, member.Hours, member.Status, member.Role));
+    }
+    public async Task<IEnumerable<Member>> SearchAsync(MemberParams memberParams, string search)
+    {
+        return (await _dbContext.Members.Where(x => x.Name.Contains(search)).AsNoTracking()
+         .OrderBy(x => x.Name)
+         .Skip((memberParams.PageNumber - 1) * memberParams.PageSize)
+         .Take(memberParams.PageSize)
+         .ToListAsync())
+         .Select(member => new Member(member.Id, member.Name, member.Username, member.Email, member.Hours, member.Status, member.Role));
+    }
     public async Task<Member> GetMemberById(Guid id, CancellationToken cancellationToken = default)
     {
        var member = await _dbContext.Members.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
@@ -25,9 +55,14 @@ internal sealed class MemberRepository : IMemberRepository
        return new Member(member.Id,member.Name,member.Username,member.Email,member.Hours,member.Status,member.Role);
     }
 
-    public async Task<IEnumerable<Member>> GetMembersAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Member>> GetMembersAsync(MemberParams memberParams,CancellationToken cancellationToken = default)
     {
-        return (await _dbContext.Members.AsNoTracking().ToListAsync(cancellationToken)).Select(member => new Member(member.Id,member.Name,member.Username,member.Email,member.Hours,member.Status,member.Role));
+        return (await _dbContext.Members.AsNoTracking()
+            .OrderBy(x => x.Name)
+            .Skip((memberParams.PageNumber - 1) * memberParams.PageSize)
+            .Take(memberParams.PageSize)
+            .ToListAsync(cancellationToken))
+            .Select(member => new Member(member.Id,member.Name,member.Username,member.Email,member.Hours,member.Status,member.Role));
     }
 
     public async Task InsertMember(Member member, CancellationToken cancellationToken)

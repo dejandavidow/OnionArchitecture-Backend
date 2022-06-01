@@ -15,6 +15,12 @@ public class CategoryController : ControllerBase
     {
         _serviceManager = serviceManager;
     }
+    [HttpGet("search-count")]
+    public async Task<IActionResult> SearchCountCategories([FromQuery] string search)
+    {
+        var categories = await _serviceManager.CategoryService.searchCountAsync(search);
+        return Ok(categories);
+    }
     [HttpGet("count")]
     public async Task<IActionResult> FilterCountCategories([FromQuery] string letter)
     {

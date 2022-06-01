@@ -8,6 +8,7 @@ namespace Services.Abstractions
 {
 public interface ICategoryService
 {
+        Task<int> searchCountAsync(string search);
         Task<int> FilterCountAsync(string letter);
         Task<IEnumerable<CategoryDTO>> FilterAsync(CategoryParams categoryParams, string letter);
 Task<IEnumerable<CategoryDTO>> SearchAsync(CategoryParams categoryParams,string search);
