@@ -42,13 +42,10 @@ namespace Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Adress")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("City")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClientName")
                         .IsRequired()
@@ -56,12 +53,10 @@ namespace Persistence.Migrations
                         .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Country")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCode")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -78,9 +73,8 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Hours")
-                        .HasMaxLength(5)
-                        .HasColumnType("int");
+                    b.Property<float>("Hours")
+                        .HasColumnType("real");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -94,6 +88,7 @@ namespace Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Username")
+                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
@@ -145,9 +140,11 @@ namespace Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("CategoryId")
+                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("ClientId")
+                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("Date")
@@ -157,16 +154,15 @@ namespace Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int>("OverTime")
-                        .HasMaxLength(5)
-                        .HasColumnType("int");
+                    b.Property<float>("OverTime")
+                        .HasColumnType("real");
 
                     b.Property<Guid?>("ProjectId")
+                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Time")
-                        .HasMaxLength(5)
-                        .HasColumnType("int");
+                    b.Property<float>("Time")
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
 
@@ -198,15 +194,21 @@ namespace Persistence.Migrations
                 {
                     b.HasOne("Persistence.Models.PersistenceCategory", "Category")
                         .WithMany()
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Persistence.Models.PersistenceClient", "Client")
                         .WithMany()
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Persistence.Models.PersistenceProject", "Project")
                         .WithMany()
-                        .HasForeignKey("ProjectId");
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
 

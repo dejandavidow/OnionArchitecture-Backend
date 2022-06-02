@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using Contracts;
+using Domain;
 
 [ApiController]
 [Route("api/Project")]
@@ -14,10 +15,34 @@ public class ProjectController : ControllerBase
     {
         _serviceManager = serviceManager;
     }
-    [HttpGet]
-    public async Task<IActionResult> GetProjects(CancellationToken cancellationToken)
+    [HttpGet("search-count")]
+    public async Task<IActionResult> CountSearchProjects([FromQuery] string search)
     {
-        var projects = await _serviceManager.ProjectService.GetAllAsync(cancellationToken);
+        var projects = await _serviceManager.ProjectService.CountSearchProjects(search);
+        return Ok(projects);
+    }
+    [HttpGet("filter-count")]
+    public async Task<IActionResult> CountFilterProjects([FromQuery] string letter)
+    {
+        var projects = await _serviceManager.ProjectService.CountFilterProjects(letter);
+        return Ok(projects);
+    }
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchProjects([FromQuery] ProjectParams projectParams, string search)
+    {
+        var projects = await _serviceManager.ProjectService.FilterProjects(projectParams, search);
+        return Ok(projects);
+    }
+    [HttpGet("filter")]
+    public async Task<IActionResult> FilterProjects([FromQuery] ProjectParams projectParams,string letter)
+    {
+        var projects = await _serviceManager.ProjectService.FilterProjects(projectParams,letter);
+        return Ok(projects);
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetProjects([FromQuery] ProjectParams projectParams,CancellationToken cancellationToken)
+    {
+        var projects = await _serviceManager.ProjectService.GetAllAsync(projectParams,cancellationToken);
         return Ok(projects);
     }
     [HttpGet("{id}")]

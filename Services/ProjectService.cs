@@ -17,14 +17,49 @@ namespace Services
         {
             _repositoryManager = repositoryManager;
         }
+        public async Task<int> CountSearchProjects(string search)
+        {
+            return await  _repositoryManager.ProjectRepository.CountSearchProjects(search);
+        }
+
+        public async Task<int> CountFilterProjects(string letter)
+        {
+            return await _repositoryManager.ProjectRepository.CountFilterProjects(letter);
+        }
+        public async Task<IEnumerable<ProjectDTO>> SearchProjects(ProjectParams projectParams, string search)
+        {
+            return (await _repositoryManager.ProjectRepository.FilterProjects(projectParams, search)).Select(project => new ProjectDTO()
+            {
+                Id = project.Id.ToString(),
+                ProjectName = project.ProjectName,
+                Description = project.Description,
+                Archive = project.Archive,
+                Status = project.Status,
+                ClientId = project.Client.Id.ToString(),
+                MemberId = project.Member.Id.ToString()
+            });
+        }
+        public async Task<IEnumerable<ProjectDTO>> FilterProjects(ProjectParams projectParams, string letter)
+        {
+            return (await _repositoryManager.ProjectRepository.FilterProjects(projectParams,letter)).Select(project => new ProjectDTO()
+            {
+                Id = project.Id.ToString(),
+                ProjectName = project.ProjectName,
+                Description = project.Description,
+                Archive = project.Archive,
+                Status = project.Status,
+                ClientId = project.Client.Id.ToString(),
+                MemberId = project.Member.Id.ToString()
+            });
+        }
+    
         public async Task CreateAsync(ProjectDTO projectDTO, CancellationToken cancellationToken = default)
         {
-            try{
-                var domainproject = new Project(Guid.NewGuid(),projectDTO.ProjectName,projectDTO.Description,projectDTO.Archive,projectDTO.Archive,
-                new Client(Guid.Parse(projectDTO.ClientDTO.Id),projectDTO.ClientDTO.ClientName,projectDTO.ClientDTO.Adress,projectDTO.ClientDTO.City,projectDTO.ClientDTO.PostalCode,projectDTO.ClientDTO.Country),
-                new Member(Guid.Parse(projectDTO.MemberDTO.Id),projectDTO.MemberDTO.Name,projectDTO.MemberDTO.Username,projectDTO.MemberDTO.Email,projectDTO.MemberDTO.Hours,
-                projectDTO.MemberDTO.Status,projectDTO.MemberDTO.Role
-                ));
+            try
+            {
+                var client = projectDTO.ClientId != null ? (await _repositoryManager.ClientRepository.GetByIdAsync(Guid.Parse(projectDTO.ClientId), cancellationToken)) : null;
+                var member = projectDTO.MemberId != null ? (await _repositoryManager.MemberRepository.GetMemberById(Guid.Parse(projectDTO.MemberId), cancellationToken)) : null;
+                var domainproject = new Project(Guid.NewGuid(),projectDTO.ProjectName,projectDTO.Description,projectDTO.Archive,projectDTO.Status,client,member);
                 await _repositoryManager.ProjectRepository.InsertProject(domainproject,cancellationToken);
                 await _repositoryManager.SaveChangesAsync(cancellationToken);
             }
@@ -55,32 +90,16 @@ namespace Services
             }
         }
 
-        public async Task<IEnumerable<ProjectDTO>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<ProjectDTO>> GetAllAsync(ProjectParams projectParams,CancellationToken cancellationToken = default)
         {
-        return (await _repositoryManager.ProjectRepository.GetProjectAsync(cancellationToken)).Select(project => new ProjectDTO(){
+        return (await _repositoryManager.ProjectRepository.GetProjectAsync(projectParams,cancellationToken)).Select(project => new ProjectDTO(){
            Id = project.Id.ToString(),
            ProjectName = project.ProjectName,
            Description = project.Description,
            Archive = project.Archive,
            Status = project.Status,
-           ClientDTO = new ClientDTO()
-           {
-               Id = project.Id.ToString(),
-               ClientName = project.Client.ClientName,
-               Adress = project.Client.Adress,
-               City = project.Client.City,
-               PostalCode = project.Client.PostalCode,
-               Country = project.Client.Country
-           },
-           MemberDTO = new MemberDTO()
-           {
-               Name = project.Member.Name,
-               Username = project.Member.Username,
-               Email = project.Member.Email,
-               Hours = project.Member.Hours,
-               Status = project.Member.Status,
-               Role = project.Member.Role
-           }
+           ClientId = project.Client.Id.ToString(),
+           MemberId = project.Member.Id.ToString()
         });
         }
 
@@ -96,24 +115,8 @@ namespace Services
            Description = result.Description,
            Archive = result.Archive,
            Status = result.Status,
-           ClientDTO = new ClientDTO()
-           {
-               Id = result.Id.ToString(),
-               ClientName = result.Client.ClientName,
-               Adress = result.Client.Adress,
-               City = result.Client.City,
-               PostalCode = result.Client.PostalCode,
-               Country = result.Client.Country
-           },
-           MemberDTO = new MemberDTO(){
-               Id = result.Member.Id.ToString(),
-               Name = result.Member.Name,
-               Username = result.Member.Username,
-               Email = result.Member.Email,
-               Hours = result.Member.Hours,
-               Status = result.Member.Status,
-               Role = result.Member.Role
-           }
+           ClientId = result.Client.Id.ToString(),
+           MemberId = result.Member.Id.ToString()
             };
             return projectDTO;
             }
@@ -130,8 +133,8 @@ namespace Services
         {
             try
             {
-                var client = projectDTO.ClientDTO!= null?(await _repositoryManager.ClientRepository.GetByIdAsync(Guid.Parse(projectDTO.ClientDTO.Id), cancellationToken)): null;
-                var member = projectDTO.MemberDTO!= null?(await _repositoryManager.MemberRepository.GetMemberById(Guid.Parse(projectDTO.MemberDTO.Id), cancellationToken)): null;
+                var client = projectDTO.ClientId!= null?(await _repositoryManager.ClientRepository.GetByIdAsync(Guid.Parse(projectDTO.ClientId), cancellationToken)): null;
+                var member = projectDTO.MemberId!= null?(await _repositoryManager.MemberRepository.GetMemberById(Guid.Parse(projectDTO.MemberId), cancellationToken)): null;
                 var result = (await _repositoryManager.ProjectRepository.GetProjectById(id,cancellationToken)).
                  UpdatePname(projectDTO.ProjectName)
                 .UpdateDescription(projectDTO.Description).

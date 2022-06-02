@@ -3,7 +3,7 @@ namespace Domain
 {
     public class Member
     {
-        public Member(Guid id,string Name,string Username,string Email,int Hours,bool Status,bool Role)
+        public Member(Guid id,string Name,string Username,string Email,float Hours,bool Status,bool Role)
         {
             this.Id=id;
             this.Name=Name;
@@ -17,7 +17,7 @@ namespace Domain
         public string Name { get; private set; }
         public string Username{get; private set;}
         public string Email { get; private set; }
-        public int Hours { get; private set; }
+        public float Hours { get; private set; }
         public bool Status { get; private set; }
         public bool Role { get; private set; }
         public Member UpdateName(string name)
@@ -32,7 +32,7 @@ namespace Domain
         {
             return new Member(this.Id,this.Name,this.Username,email ?? this.Email,this.Hours,this.Status,this.Role);
         }
-        public Member UpdateHours(int hours)
+        public Member UpdateHours(float hours)
         {
             return new Member(this.Id,this.Name,this.Username,this.Email, hours >0 ? hours : this.Hours , this.Status,this.Role);
         }

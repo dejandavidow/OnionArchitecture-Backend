@@ -4,17 +4,13 @@ namespace Contracts
     public class ClientDTO
     {
         public string Id { get; set; }
-        [Required]
-        [MaxLength(30)]
-        [MinLength(3)]
-        public string ClientName { get;set; }
-        [Required]
-        [MaxLength(30)]
-        [MinLength(5)]
-        public string Adress { get;set; }
-        [MaxLength(20)]
-        public string City { get;set;}
-        public string PostalCode{get;set;}
-        public string Country {get;set;}
+        [Required(AllowEmptyStrings = false, ErrorMessage = "This field is required.")]
+        [MaxLength(30, ErrorMessage = "Max characters are 30.")]
+        [MinLength(3, ErrorMessage = "Min Characters are 3.")]
+        public string ClientName { get; set; }
+        public string Adress { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public string PostalCode { get; set; } = string.Empty;
+        public string Country { get; set; } = string.Empty;
     }
 }

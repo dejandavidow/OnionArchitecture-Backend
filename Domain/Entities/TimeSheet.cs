@@ -3,7 +3,7 @@ namespace Domain
 {
     public class TimeSheet
     {
-        public TimeSheet(Guid id,string Description,int Time,int OverTime,DateTime Date,Client client,Project project,Category category)
+        public TimeSheet(Guid id,string Description, float Time, float OverTime,DateTime Date,Client client,Project project,Category category)
         {
             this.Id = id;
             this.Description = Description;
@@ -16,8 +16,8 @@ namespace Domain
         }
         public Guid Id { get; private set; }
         public string Description { get; private set; }
-        public int Time{get;private set;}
-        public int OverTime{get;private set;}
+        public float Time{get;private set;}
+        public float OverTime {get;private set;}
         public DateTime Date{get;private set;}
         public Client Client{get; private set;}
         public Project Project{get; private set;}
@@ -27,11 +27,11 @@ namespace Domain
         {
             return new TimeSheet(this.Id,description ?? this.Description,this.Time,this.OverTime,this.Date,this.Client,this.Project,this.Category);
         }
-         public TimeSheet UpdateTime(int time)
+         public TimeSheet UpdateTime(float time)
         {
             return new TimeSheet(this.Id,this.Description,time >0 ? time : this.Time,this.OverTime,this.Date,this.Client,this.Project,this.Category);
         }
-        public TimeSheet UpdateOvertime(int overtime)
+        public TimeSheet UpdateOvertime(float overtime)
         {
             return new TimeSheet(this.Id,this.Description,this.Time,overtime >0 ? overtime : this.OverTime,this.Date,this.Client,this.Project,this.Category);
         }

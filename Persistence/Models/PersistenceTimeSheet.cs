@@ -7,23 +7,24 @@ namespace Persistence.Models
     {
         [Key]
         public Guid Id { get; set; }
-        [MaxLength(500)]
-        public string Description { get; set; }
-        [Required]
-        [MaxLength(5)]
-        public int Time{get;set;}
-        [MaxLength(5)]
-        public int OverTime{get;set;}
+        [MaxLength(500,ErrorMessage ="Max characters are 500.")]
+        public string Description { get; set; } = string.Empty;
+        [Required(AllowEmptyStrings =false,ErrorMessage ="This field is required.")]
+        public float Time {get;set;}
+        public float OverTime {get;set;}
         public DateTime Date{get;set;}
         
         public Guid? ClientId{get;set;}
         [ForeignKey(nameof(ClientId))]
+        [Required]
         public PersistenceClient Client{get;set;}
         public Guid? ProjectId{get;set;}
         [ForeignKey(nameof(ProjectId))]
+        [Required]
         public PersistenceProject Project{get;set;}
         public Guid? CategoryId{get;set;}
         [ForeignKey(nameof(CategoryId))]
+        [Required]
         public PersistenceCategory Category{get;set;}
     }
 }

@@ -5,19 +5,19 @@ namespace Persistence.Models
 {
     public class PersistenceMember
     {
-      [Key]
-      public Guid Id { get; set; }
-        [Required]
-        [MaxLength(30)]
-        [MinLength(3)]
+        [Key]
+        public Guid Id { get; set; }
+        [Required(ErrorMessage = "This field is required.")]
+        [MaxLength(30 ,ErrorMessage = "Max characters are 30.")]
+        [MinLength(3, ErrorMessage = "Min Characters are 3.")]
         public string Name { get; set; }
-        [MaxLength(30)]
+        [Required(ErrorMessage = "This field is required.")]
+        [MaxLength(30, ErrorMessage = "Max characters are 30.")]
         public string Username{get;set;}
-        [Required]
+        [Required(ErrorMessage = "This field is required.")]
         [EmailAddress]
         public string Email { get; set; }
-        [MaxLength(5)]
-        public int Hours { get; set; }
+        public float Hours { get; set; }
         public bool Status { get; set; }
         public bool Role { get; set; }
     }

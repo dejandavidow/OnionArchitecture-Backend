@@ -14,9 +14,68 @@ internal sealed class ProjectRepository : IProjectRepository
     {
         _dbContext=dbContext;
     }
-    public async Task<IEnumerable<Project>> GetProjectAsync(CancellationToken cancellationToken = default)
+    public async Task<int> CountSearchProjects(string search)
     {
-        return (await _dbContext.Projects.Include(x => x.Client).Include(x => x.Member).AsNoTracking().ToListAsync(cancellationToken)).Select(project => new Project(
+        if(String.IsNullOrEmpty(search))
+        {
+            return await _dbContext.Projects.CountAsync();
+        }
+        return await _dbContext.Projects.Where(x => x.ProjectName.Contains(search)).CountAsync();
+    }
+    public async Task<int> CountFilterProjects(string letter)
+    {
+        return await _dbContext.Projects.Where(x => x.ProjectName.StartsWith(letter)).CountAsync();
+    }
+    public async Task<IEnumerable<Project>> SearchProjects(ProjectParams projectParams, string search)
+    {
+        return (await _dbContext.Projects
+            .Where(x => x.ProjectName.Contains(search))
+            .OrderBy(x => x.ProjectName)
+            .Skip((projectParams.PageNumber - 1) * projectParams.PageSize)
+            .Take(projectParams.PageSize)
+            .Include(x => x.Client)
+            .Include(x => x.Member).AsNoTracking()
+            .ToListAsync())
+            .Select(project => new Project(
+            project.Id,
+            project.ProjectName,
+            project.Description,
+            project.Archive,
+            project.Status,
+            new Client(project.Client.Id, project.Client.ClientName, project.Client.Adress, project.Client.City, project.Client.PostalCode, project.Client.Country),
+            new Member(project.Member.Id, project.Member.Name, project.Member.Username, project.Member.Email, project.Member.Hours, project.Member.Status, project.Member.Role)
+        ));
+    }
+    public async Task<IEnumerable<Project>> FilterProjects(ProjectParams projectParams,string letter)
+    {
+        return (await _dbContext.Projects
+            .Where(x => x.ProjectName.StartsWith(letter))
+            .OrderBy(x => x.ProjectName)
+            .Skip((projectParams.PageNumber - 1) * projectParams.PageSize)
+            .Take(projectParams.PageSize)
+            .Include(x => x.Client)
+            .Include(x => x.Member).AsNoTracking()
+            .ToListAsync())
+            .Select(project => new Project(
+            project.Id,
+            project.ProjectName,
+            project.Description,
+            project.Archive,
+            project.Status,
+            new Client(project.Client.Id, project.Client.ClientName, project.Client.Adress, project.Client.City, project.Client.PostalCode, project.Client.Country),
+            new Member(project.Member.Id, project.Member.Name, project.Member.Username, project.Member.Email, project.Member.Hours, project.Member.Status, project.Member.Role)
+        ));
+    }
+    public async Task<IEnumerable<Project>> GetProjectAsync(ProjectParams projectParams,CancellationToken cancellationToken = default)
+    {
+        return (await _dbContext.Projects
+            .OrderBy(x => x.ProjectName)
+            .Skip((projectParams.PageNumber - 1) * projectParams.PageSize)
+            .Take(projectParams.PageSize)
+            .Include(x => x.Client)
+            .Include(x => x.Member).AsNoTracking()
+            .ToListAsync(cancellationToken))
+            .Select(project => new Project(
             project.Id,
             project.ProjectName,
             project.Description,
@@ -53,6 +112,7 @@ internal sealed class ProjectRepository : IProjectRepository
             ProjectName = project.ProjectName,
             Description = project.Description,
             Archive = project.Archive,
+            Status = project.Status,
             ClientId = project.Client.Id,
             MemberId = project.Member.Id
         });
