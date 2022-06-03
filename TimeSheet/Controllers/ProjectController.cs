@@ -5,7 +5,9 @@ using System.Threading;
 using System;
 using Contracts;
 using Domain;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize]
 [ApiController]
 [Route("api/Project")]
 public class ProjectController : ControllerBase

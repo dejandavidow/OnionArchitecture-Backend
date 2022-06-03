@@ -5,7 +5,8 @@ using System.Threading;
 using System;
 using Contracts;
 using Domain;
-
+using Microsoft.AspNetCore.Authorization;
+[Authorize]
 [ApiController]
 [Route("api/Member")]
 public class MemberController : ControllerBase
@@ -14,6 +15,13 @@ public class MemberController : ControllerBase
     public MemberController(IServiceManager serviceManager)
     {
         _serviceManager=serviceManager;
+    }
+    [AllowAnonymous]
+    [HttpPost("login")]
+    public async Task<IActionResult> Authenticate([FromBody] AuthenticateModel model)
+    {
+        var member = await _serviceManager.MemberService.Authenticate(model.Username,model.Password);
+        return Ok(member);
     }
     [HttpGet("search-count")]
     public async Task<IActionResult> CountSearchMembers([FromQuery] string search)
@@ -45,7 +53,7 @@ public class MemberController : ControllerBase
         var members = await _serviceManager.MemberService.GetAllAsync(memberParams,cancellationToken);
         return Ok(members);
     }
-    [HttpGet("{Id}")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetMemberById(Guid id,CancellationToken cancellationToken)
     {
         var member = await _serviceManager.MemberService.GetByIdAsync(id,cancellationToken);

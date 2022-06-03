@@ -15,6 +15,16 @@ internal sealed class MemberRepository : IMemberRepository
     {
         _dbContext = dbContext;
     }
+    public async Task<Member> Authenticate(string username, string password)
+    {
+        var member = await _dbContext.Members.FirstOrDefaultAsync(m => m.Username == username && m.Password == password);
+        if(member == null)
+        {
+            throw new Exception("Credentials does not match.");
+            
+        }
+        return new Member(member.Id, member.Name, member.Username, member.Email, member.Hours, member.Status, member.Role, member.Password);
+    }
     public async Task<int> SearchCountAsync(string search)
     {
         if(String.IsNullOrEmpty(search))
@@ -34,7 +44,7 @@ internal sealed class MemberRepository : IMemberRepository
          .Skip((memberParams.PageNumber - 1) * memberParams.PageSize)
          .Take(memberParams.PageSize)
          .ToListAsync())
-         .Select(member => new Member(member.Id, member.Name, member.Username, member.Email, member.Hours, member.Status, member.Role));
+         .Select(member => new Member(member.Id, member.Name, member.Username, member.Email, member.Hours, member.Status, member.Role,member.Password));
     }
     public async Task<IEnumerable<Member>> SearchAsync(MemberParams memberParams, string search)
     {
@@ -43,7 +53,7 @@ internal sealed class MemberRepository : IMemberRepository
          .Skip((memberParams.PageNumber - 1) * memberParams.PageSize)
          .Take(memberParams.PageSize)
          .ToListAsync())
-         .Select(member => new Member(member.Id, member.Name, member.Username, member.Email, member.Hours, member.Status, member.Role));
+         .Select(member => new Member(member.Id, member.Name, member.Username, member.Email, member.Hours, member.Status, member.Role, member.Password));
     }
     public async Task<Member> GetMemberById(Guid id, CancellationToken cancellationToken = default)
     {
@@ -52,7 +62,7 @@ internal sealed class MemberRepository : IMemberRepository
        {
            throw new NotFoundException("Member not found");
        }
-       return new Member(member.Id,member.Name,member.Username,member.Email,member.Hours,member.Status,member.Role);
+       return new Member(member.Id,member.Name,member.Username,member.Email,member.Hours,member.Status,member.Role, member.Password);
     }
 
     public async Task<IEnumerable<Member>> GetMembersAsync(MemberParams memberParams,CancellationToken cancellationToken = default)
@@ -62,7 +72,7 @@ internal sealed class MemberRepository : IMemberRepository
             .Skip((memberParams.PageNumber - 1) * memberParams.PageSize)
             .Take(memberParams.PageSize)
             .ToListAsync(cancellationToken))
-            .Select(member => new Member(member.Id,member.Name,member.Username,member.Email,member.Hours,member.Status,member.Role));
+            .Select(member => new Member(member.Id,member.Name,member.Username,member.Email,member.Hours,member.Status,member.Role, member.Password));
     }
 
     public async Task InsertMember(Member member, CancellationToken cancellationToken)
@@ -79,7 +89,8 @@ internal sealed class MemberRepository : IMemberRepository
             Email = member.Email,
             Hours = member.Hours,
             Status = member.Status,
-            Role = member.Role
+            Role = member.Role,
+            Password = member.Password
         });
     }
     public void RemoveMember(Member member)
@@ -91,7 +102,8 @@ internal sealed class MemberRepository : IMemberRepository
             Email = member.Email,
             Hours = member.Hours,
             Status = member.Status,
-            Role = member.Role
+            Role = member.Role,
+            Password = member.Password
         });
     }
 
@@ -105,5 +117,6 @@ internal sealed class MemberRepository : IMemberRepository
         memberforupdate.Hours = member.Hours;
         memberforupdate.Status = member.Status;
         memberforupdate.Role = member.Role;
+        memberforupdate.Password = member.Password;
     }
 }

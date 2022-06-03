@@ -5,7 +5,9 @@ using System.Threading;
 using System;
 using Contracts;
 using Domain;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize]
 [ApiController]
 [Route("api/Category")]
 public class CategoryController : ControllerBase

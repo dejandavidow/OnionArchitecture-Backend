@@ -1,9 +1,11 @@
 using System;
+using System.Text.Json.Serialization;
+
 namespace Domain
 {
     public class Member
     {
-        public Member(Guid id,string Name,string Username,string Email,float Hours,bool Status,bool Role)
+        public Member(Guid id,string Name,string Username,string Email,float Hours,bool Status,bool Role,string Password)
         {
             this.Id=id;
             this.Name=Name;
@@ -12,6 +14,7 @@ namespace Domain
             this.Hours=Hours;
             this.Status=Status;
             this.Role=Role;
+            this.Password=Password;
         }
         public Guid Id { get; private set; }
         public string Name { get; private set; }
@@ -20,29 +23,30 @@ namespace Domain
         public float Hours { get; private set; }
         public bool Status { get; private set; }
         public bool Role { get; private set; }
+        public string Password { get; private set; }
         public Member UpdateName(string name)
         {
-            return new Member(this.Id,name ?? this.Name,this.Username,this.Email,this.Hours,this.Status,this.Role);
+            return new Member(this.Id,name ?? this.Name,this.Username,this.Email,this.Hours,this.Status,this.Role,this.Password);
         }
         public Member UpdateUserName(string username)
         {
-            return new Member(this.Id,this.Name,username ?? this.Username,this.Email,this.Hours,this.Status,this.Role);
+            return new Member(this.Id,this.Name,username ?? this.Username,this.Email,this.Hours,this.Status,this.Role, this.Password);
         } 
         public Member UpdateEmail(string email)
         {
-            return new Member(this.Id,this.Name,this.Username,email ?? this.Email,this.Hours,this.Status,this.Role);
+            return new Member(this.Id,this.Name,this.Username,email ?? this.Email,this.Hours,this.Status,this.Role, this.Password);
         }
         public Member UpdateHours(float hours)
         {
-            return new Member(this.Id,this.Name,this.Username,this.Email, hours >0 ? hours : this.Hours , this.Status,this.Role);
+            return new Member(this.Id,this.Name,this.Username,this.Email, hours >0 ? hours : this.Hours , this.Status,this.Role, this.Password);
         }
         public Member UpdateStatus(bool status)
         {
-            return new Member(this.Id, this.Name, this.Username, this.Email, this.Hours,status == true ? status : this.Status,this.Role);
+            return new Member(this.Id, this.Name, this.Username, this.Email, this.Hours,status == true ? status : this.Status,this.Role, this.Password);
         } 
         public Member UpdateRole(bool role)
         {
-            return new Member(this.Id,this.Name,this.Username,this.Email,this.Hours,this.Status, role == true ? role : this.Role);
+            return new Member(this.Id,this.Name,this.Username,this.Email,this.Hours,this.Status, role == true ? role : this.Role, this.Password);
         }         
     }
 }

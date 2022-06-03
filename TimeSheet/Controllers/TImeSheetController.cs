@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Contracts;
+using Microsoft.AspNetCore.Authorization;
+
+[Authorize]
 [ApiController]
 [Route("api/TimeSheet")]
 public class TimeSheetController : ControllerBase

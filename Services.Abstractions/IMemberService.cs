@@ -8,7 +8,8 @@ using Domain;
 namespace Services.Abstractions
 {
 public interface IMemberService
-{
+    {
+        Task<MemberDTO> Authenticate(string username,string password);
         Task<int> SearchCountAsync(string search);
         Task<int> FilterCountAsync(string letter);
         Task<IEnumerable<MemberDTO>> FilterAsync(MemberParams memberParams, string letter);

@@ -43,7 +43,7 @@ internal sealed class ProjectRepository : IProjectRepository
             project.Archive,
             project.Status,
             new Client(project.Client.Id, project.Client.ClientName, project.Client.Adress, project.Client.City, project.Client.PostalCode, project.Client.Country),
-            new Member(project.Member.Id, project.Member.Name, project.Member.Username, project.Member.Email, project.Member.Hours, project.Member.Status, project.Member.Role)
+            new Member(project.Member.Id, project.Member.Name, project.Member.Username, project.Member.Email, project.Member.Hours, project.Member.Status, project.Member.Role,project.Member.Password)
         ));
     }
     public async Task<IEnumerable<Project>> FilterProjects(ProjectParams projectParams,string letter)
@@ -63,7 +63,7 @@ internal sealed class ProjectRepository : IProjectRepository
             project.Archive,
             project.Status,
             new Client(project.Client.Id, project.Client.ClientName, project.Client.Adress, project.Client.City, project.Client.PostalCode, project.Client.Country),
-            new Member(project.Member.Id, project.Member.Name, project.Member.Username, project.Member.Email, project.Member.Hours, project.Member.Status, project.Member.Role)
+            new Member(project.Member.Id, project.Member.Name, project.Member.Username, project.Member.Email, project.Member.Hours, project.Member.Status, project.Member.Role,project.Member.Password)
         ));
     }
     public async Task<IEnumerable<Project>> GetProjectAsync(ProjectParams projectParams,CancellationToken cancellationToken = default)
@@ -82,7 +82,7 @@ internal sealed class ProjectRepository : IProjectRepository
             project.Archive,
             project.Status,
             new Client(project.Client.Id, project.Client.ClientName, project.Client.Adress, project.Client.City, project.Client.PostalCode, project.Client.Country),
-            new Member(project.Member.Id, project.Member.Name, project.Member.Username, project.Member.Email, project.Member.Hours, project.Member.Status, project.Member.Role)
+            new Member(project.Member.Id, project.Member.Name, project.Member.Username, project.Member.Email, project.Member.Hours, project.Member.Status, project.Member.Role,project.Member.Password)
         ));
     }
 
@@ -95,7 +95,7 @@ internal sealed class ProjectRepository : IProjectRepository
         }
         return new Project(persistenceproject.Id,persistenceproject.ProjectName,persistenceproject.Description,
         persistenceproject.Archive,persistenceproject.Status,new Client(persistenceproject.Client.Id, persistenceproject.Client.ClientName, persistenceproject.Client.Adress, persistenceproject.Client.City, persistenceproject.Client.PostalCode, persistenceproject.Client.Country),
-            new Member(persistenceproject.Member.Id, persistenceproject.Member.Name, persistenceproject.Member.Username, persistenceproject.Member.Email, persistenceproject.Member.Hours, persistenceproject.Member.Status, persistenceproject.Member.Role)
+            new Member(persistenceproject.Member.Id, persistenceproject.Member.Name, persistenceproject.Member.Username, persistenceproject.Member.Email, persistenceproject.Member.Hours, persistenceproject.Member.Status, persistenceproject.Member.Role,persistenceproject.Member.Password)
         );
     }
 

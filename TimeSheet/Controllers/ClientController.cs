@@ -5,6 +5,9 @@ using System.Threading;
 using System;
 using Contracts;
 using Domain;
+using Microsoft.AspNetCore.Authorization;
+
+[Authorize]
 [ApiController]
 [Route("api/Client")]
 public class ClientController : ControllerBase

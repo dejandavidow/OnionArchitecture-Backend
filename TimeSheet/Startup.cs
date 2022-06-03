@@ -1,4 +1,5 @@
 using Domain;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,8 @@ namespace TimeSheet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication("BasicAuthentication")
+                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
             services.AddDbContext<RepositoryDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IServiceManager, ServiceManager>();
             services.AddScoped<IRepositoryManager, RepositoryManager>();
@@ -60,8 +63,8 @@ namespace TimeSheet
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            // app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseCors("AllowOrigin");
 
             app.UseEndpoints(endpoints =>

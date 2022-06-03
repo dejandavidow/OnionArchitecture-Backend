@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Contracts
 {
@@ -18,5 +19,6 @@ namespace Contracts
         public float Hours { get; set; }
         public bool Status { get; set; }
         public bool Role { get; set; }
+        public string Password { get; set; }
     }
 }

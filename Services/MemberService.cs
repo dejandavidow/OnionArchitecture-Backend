@@ -17,9 +17,23 @@ namespace Services
         {
             _repositoryManager = repositoryManager;
         }
+        public async Task<MemberDTO> Authenticate(string username, string password)
+        {
+            var member = await _repositoryManager.MemberRepository.Authenticate(username, password);
+            return new MemberDTO()
+            {
+                Id = member.Id.ToString(),
+                Name = member.Name,
+                Username = member.Username,
+                Email = member.Email,
+                Hours = member.Hours,
+                Status = member.Status,
+                Role = member.Role
+            };
+        }
         public async Task<int> SearchCountAsync(string search)
         {
-            return await _repositoryManager.MemberRepository.SearchCountAsync(search);
+                return await _repositoryManager.MemberRepository.SearchCountAsync(search);
         }
         public async Task<int> FilterCountAsync(string letter)
         {
@@ -57,7 +71,7 @@ namespace Services
         {
               try
             {
-            var member = new Member(Guid.NewGuid(),memberDTO.Name,memberDTO.Username,memberDTO.Email,memberDTO.Hours,memberDTO.Status,memberDTO.Role); 
+            var member = new Member(Guid.NewGuid(),memberDTO.Name,memberDTO.Username,memberDTO.Email,memberDTO.Hours,memberDTO.Status,memberDTO.Role,memberDTO.Password); 
             await _repositoryManager.MemberRepository.InsertMember(member, cancellationToken);
             await _repositoryManager.SaveChangesAsync(cancellationToken);
             }

@@ -31,7 +31,7 @@ internal sealed class TimeSheetRepository : ITimeSheetRepository
             new Client(timesheet.Client.Id,timesheet.Client.ClientName,timesheet.Client.Adress,timesheet.Client.City,timesheet.Client.PostalCode,timesheet.Client.Country),
             new Project(timesheet.Project.Id,timesheet.Project.ProjectName,timesheet.Project.Description,timesheet.Project.Archive,timesheet.Project.Status,
             new Client(timesheet.Client.Id,timesheet.Client.ClientName,timesheet.Client.Adress,timesheet.Client.City,timesheet.Client.PostalCode,timesheet.Client.Country),
-            new Member(timesheet.Project.Member.Id,timesheet.Project.Member.Name,timesheet.Project.Member.Username,timesheet.Project.Member.Email,timesheet.Project.Member.Hours,timesheet.Project.Member.Status,timesheet.Project.Member.Role)),
+            new Member(timesheet.Project.Member.Id,timesheet.Project.Member.Name,timesheet.Project.Member.Username,timesheet.Project.Member.Email,timesheet.Project.Member.Hours,timesheet.Project.Member.Status,timesheet.Project.Member.Role,timesheet.Project.Member.Password)),
             new Category(timesheet.Category.Id,timesheet.Category.Name)
         ));
     }
@@ -54,7 +54,7 @@ internal sealed class TimeSheetRepository : ITimeSheetRepository
             new Client(timesheet.Client.Id,timesheet.Client.ClientName,timesheet.Client.Adress,timesheet.Client.City,timesheet.Client.PostalCode,timesheet.Client.Country),
             new Project(timesheet.Project.Id,timesheet.Project.ProjectName,timesheet.Project.Description,timesheet.Project.Archive,timesheet.Project.Status,
             new Client(timesheet.Client.Id,timesheet.Client.ClientName,timesheet.Client.Adress,timesheet.Client.City,timesheet.Client.PostalCode,timesheet.Client.Country),
-            new Member(timesheet.Project.Member.Id,timesheet.Project.Member.Name,timesheet.Project.Member.Username,timesheet.Project.Member.Email,timesheet.Project.Member.Hours,timesheet.Project.Member.Status,timesheet.Project.Member.Role)),
+            new Member(timesheet.Project.Member.Id,timesheet.Project.Member.Name,timesheet.Project.Member.Username,timesheet.Project.Member.Email,timesheet.Project.Member.Hours,timesheet.Project.Member.Status,timesheet.Project.Member.Role,timesheet.Project.Member.Password)),
             new Category(timesheet.Category.Id,timesheet.Category.Name)
         );
     }
