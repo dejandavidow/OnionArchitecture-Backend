@@ -39,9 +39,9 @@ namespace Services
         {
             return await  _repositoryManager.MemberRepository.FilterCountAsync(letter);
         }
-        public async Task<IEnumerable<MemberDTO>> FilterAsync(MemberParams memberParams, string letter)
+        public async Task<IEnumerable<GetMemberDTO>> FilterAsync(MemberParams memberParams, string letter)
         {
-            var result = (await _repositoryManager.MemberRepository.FilterAsync(memberParams, letter)).Select(member => new MemberDTO()
+            var result = (await _repositoryManager.MemberRepository.FilterAsync(memberParams, letter)).Select(member => new GetMemberDTO()
             {
                 Id = member.Id.ToString(),
                 Name = member.Name,
@@ -53,9 +53,9 @@ namespace Services
             });
             return result;
         }
-        public async Task<IEnumerable<MemberDTO>> SearchAsync(MemberParams memberParams,string search)
+        public async Task<IEnumerable<GetMemberDTO>> SearchAsync(MemberParams memberParams,string search)
         {
-            var result = (await _repositoryManager.MemberRepository.SearchAsync(memberParams,search)).Select(member => new MemberDTO()
+            var result = (await _repositoryManager.MemberRepository.SearchAsync(memberParams,search)).Select(member => new GetMemberDTO()
             {
                 Id = member.Id.ToString(),
                 Name = member.Name,
@@ -102,9 +102,9 @@ namespace Services
             }
         }
 
-        public async Task<IEnumerable<MemberDTO>> GetAllAsync(MemberParams memberParams,CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<GetMemberDTO>> GetAllAsync(MemberParams memberParams,CancellationToken cancellationToken = default)
         {
-            var result = (await _repositoryManager.MemberRepository.GetMembersAsync(memberParams,cancellationToken)).Select(member => new MemberDTO() {
+            var result = (await _repositoryManager.MemberRepository.GetMembersAsync(memberParams,cancellationToken)).Select(member => new GetMemberDTO() {
             Id = member.Id.ToString(),
             Name = member.Name,
             Username = member.Username,
@@ -116,12 +116,12 @@ namespace Services
             return result;
         }
 
-        public async Task<MemberDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<GetMemberDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             try
             {
             var result = await _repositoryManager.MemberRepository.GetMemberById(id,cancellationToken);
-            var memberDTO = new MemberDTO()
+            var memberDTO = new GetMemberDTO()
             {
                 Id = result.Id.ToString(),
                 Name = result.Name,

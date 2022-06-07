@@ -12,10 +12,10 @@ public interface IMemberService
         Task<MemberDTO> Authenticate(string username,string password);
         Task<int> SearchCountAsync(string search);
         Task<int> FilterCountAsync(string letter);
-        Task<IEnumerable<MemberDTO>> FilterAsync(MemberParams memberParams, string letter);
-        Task<IEnumerable<MemberDTO>> SearchAsync(MemberParams memberParams, string search);
-        Task<IEnumerable<MemberDTO>> GetAllAsync(MemberParams memberParams,CancellationToken cancellationToken = default);
-        Task<MemberDTO> GetByIdAsync(Guid id,CancellationToken cancellationToken = default);
+        Task<IEnumerable<GetMemberDTO>> FilterAsync(MemberParams memberParams, string letter);
+        Task<IEnumerable<GetMemberDTO>> SearchAsync(MemberParams memberParams, string search);
+        Task<IEnumerable<GetMemberDTO>> GetAllAsync(MemberParams memberParams,CancellationToken cancellationToken = default);
+        Task<GetMemberDTO> GetByIdAsync(Guid id,CancellationToken cancellationToken = default);
         Task CreateAsync(MemberDTO memberDTO,CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid id,CancellationToken cancellationToken = default);
         Task UpdateAsync(Guid id,UpdateMemberDTO memberDTO,CancellationToken cancellationToken = default);

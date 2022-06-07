@@ -13,10 +13,11 @@ namespace Contracts
         [Required(ErrorMessage = "This field is required.")]
         [MaxLength(30, ErrorMessage = "Max characters are 30.")]
         public string Username { get; set; }
-        [Required(ErrorMessage = "This field is required.")]
+   
         [EmailAddress]
+        [Required(ErrorMessage = "This field is required.")]
         public string Email { get; set; }
-        public float Hours { get; set; }
+        public float Hours { get; set; } = 0;
         public string Status { get; set; } = "inactive";
         public string Role { get; set; } = "worker";
         [Required]
