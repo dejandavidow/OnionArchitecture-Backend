@@ -19,9 +19,8 @@ namespace Persistence.Models
         [EmailAddress]
         public string Email { get; set; }
         public float Hours { get; set; }
-        public bool Status { get; set; }
-        public bool Role { get; set; }
-        //[JsonIgnore]
+        public string Status { get; set; } = "inactive";
+        public string Role { get; set; } = "worker";
         public string Password { get; set; }
     }
 }

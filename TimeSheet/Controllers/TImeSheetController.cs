@@ -6,7 +6,7 @@ using Services.Abstractions;
 using Contracts;
 using Microsoft.AspNetCore.Authorization;
 
-[Authorize]
+//[Authorize]
 [ApiController]
 [Route("api/TimeSheet")]
 public class TimeSheetController : ControllerBase

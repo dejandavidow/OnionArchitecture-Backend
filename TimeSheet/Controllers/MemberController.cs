@@ -6,7 +6,7 @@ using System;
 using Contracts;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
-[Authorize]
+//[Authorize]
 [ApiController]
 [Route("api/Member")]
 public class MemberController : ControllerBase
@@ -65,16 +65,16 @@ public class MemberController : ControllerBase
         await _serviceManager.MemberService.CreateAsync(memberDTO,cancellationToken);
         return Ok();
     }
-    [HttpDelete("{Id}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteMember(Guid id,CancellationToken cancellationToken)
     {
         await _serviceManager.MemberService.DeleteAsync(id,cancellationToken);
         return NoContent();
     }
-    [HttpPut("{Id}")]
-    public async Task<IActionResult> UpdateMember(Guid id,[FromBody] MemberDTO memberDTO, CancellationToken cancellationToken)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateMember(Guid id,[FromBody] UpdateMemberDTO updateMemberDTO, CancellationToken cancellationToken)
     {
-        await _serviceManager.MemberService.UpdateAsync(id,memberDTO,cancellationToken);
+        await _serviceManager.MemberService.UpdateAsync(id,updateMemberDTO,cancellationToken);
         return NoContent();
     }
 }

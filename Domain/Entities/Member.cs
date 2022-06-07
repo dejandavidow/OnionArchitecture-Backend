@@ -5,7 +5,7 @@ namespace Domain
 {
     public class Member
     {
-        public Member(Guid id,string Name,string Username,string Email,float Hours,bool Status,bool Role,string Password)
+        public Member(Guid id,string Name,string Username,string Email,float Hours,string Status,string Role,string Password)
         {
             this.Id=id;
             this.Name=Name;
@@ -21,8 +21,8 @@ namespace Domain
         public string Username{get; private set;}
         public string Email { get; private set; }
         public float Hours { get; private set; }
-        public bool Status { get; private set; }
-        public bool Role { get; private set; }
+        public string Status { get; private set; }
+        public string Role { get; private set; }
         public string Password { get; private set; }
         public Member UpdateName(string name)
         {
@@ -40,13 +40,17 @@ namespace Domain
         {
             return new Member(this.Id,this.Name,this.Username,this.Email, hours >0 ? hours : this.Hours , this.Status,this.Role, this.Password);
         }
-        public Member UpdateStatus(bool status)
+        public Member UpdateStatus(string status)
         {
-            return new Member(this.Id, this.Name, this.Username, this.Email, this.Hours,status == true ? status : this.Status,this.Role, this.Password);
+            return new Member(this.Id, this.Name, this.Username, this.Email, this.Hours,status ?? this.Status,this.Role, this.Password);
         } 
-        public Member UpdateRole(bool role)
+        public Member UpdateRole(string role)
         {
-            return new Member(this.Id,this.Name,this.Username,this.Email,this.Hours,this.Status, role == true ? role : this.Role, this.Password);
-        }         
+            return new Member(this.Id,this.Name,this.Username,this.Email,this.Hours,this.Status, role ?? this.Role, this.Password);
+        }
+        public Member UpdatePassword(string password)
+        {
+            return new Member(this.Id, this.Name, this.Username, this.Email, this.Hours, this.Status, this.Role, password ?? this.Password);
+        }
     }
 }

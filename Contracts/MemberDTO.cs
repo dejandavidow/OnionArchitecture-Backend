@@ -17,8 +17,10 @@ namespace Contracts
         [EmailAddress]
         public string Email { get; set; }
         public float Hours { get; set; }
-        public bool Status { get; set; }
-        public bool Role { get; set; }
+        public string Status { get; set; } = "inactive";
+        public string Role { get; set; } = "worker";
+        [Required]
+        [MinLength(3,ErrorMessage ="min password lenght is 3")]
         public string Password { get; set; }
     }
 }

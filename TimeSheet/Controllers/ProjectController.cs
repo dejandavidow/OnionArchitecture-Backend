@@ -7,7 +7,7 @@ using Contracts;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
-[Authorize]
+//[Authorize]
 [ApiController]
 [Route("api/Project")]
 public class ProjectController : ControllerBase
@@ -65,7 +65,7 @@ public class ProjectController : ControllerBase
         await _serviceManager.ProjectService.CreateAsync(projectDTO);
         return Ok();
     }
-    [HttpPut("{Id}")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProject(Guid id,[FromBody] ProjectDTO projectDTO,CancellationToken cancellationToken)
     {
         await _serviceManager.ProjectService.UpdateAsync(id,projectDTO,cancellationToken);

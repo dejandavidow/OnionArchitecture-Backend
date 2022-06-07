@@ -142,18 +142,19 @@ namespace Services
                 throw;
             }
         }
-        public async Task UpdateAsync(Guid id,MemberDTO memberDTO,CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(Guid id,UpdateMemberDTO memberDTO,CancellationToken cancellationToken = default)
         {
             try
             {
-            //var checkhours = memberDTO.Hours > 0 ? memberDTO.Hours : 0;
-            var memberforupdate = (await _repositoryManager.MemberRepository.GetMemberById(id,cancellationToken))
-            .UpdateName(memberDTO.Name)
-            .UpdateEmail(memberDTO.Email)
-            .UpdateHours(memberDTO.Hours)
-            .UpdateUserName(memberDTO.Username)
-            .UpdateStatus(memberDTO.Status)
-            .UpdateRole(memberDTO.Role);
+                //var checkhours = memberDTO.Hours > 0 ? memberDTO.Hours : 0;
+                var memberforupdate = (await _repositoryManager.MemberRepository.GetMemberById(id, cancellationToken))
+                .UpdateName(memberDTO.Name)
+                .UpdateEmail(memberDTO.Email)
+                .UpdateHours(memberDTO.Hours)
+                .UpdateUserName(memberDTO.Username)
+                .UpdateStatus(memberDTO.Status)
+                .UpdateRole(memberDTO.Role)
+                .UpdatePassword(memberDTO.Password);
             await _repositoryManager.MemberRepository.UpdateMember(memberforupdate,cancellationToken);
             await _repositoryManager.SaveChangesAsync(cancellationToken);
             }

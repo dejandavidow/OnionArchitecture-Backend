@@ -18,7 +18,7 @@ public interface IMemberService
         Task<MemberDTO> GetByIdAsync(Guid id,CancellationToken cancellationToken = default);
         Task CreateAsync(MemberDTO memberDTO,CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid id,CancellationToken cancellationToken = default);
-        Task UpdateAsync(Guid id,MemberDTO memberDTO,CancellationToken cancellationToken = default);
+        Task UpdateAsync(Guid id,UpdateMemberDTO memberDTO,CancellationToken cancellationToken = default);
 }
 
 } 
