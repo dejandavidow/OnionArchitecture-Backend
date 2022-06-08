@@ -15,8 +15,8 @@ public class PersistenceProject
         public string ProjectName { get; set; }
         [MaxLength(500,ErrorMessage ="Max characters are 500.")]
         public string Description { get; set; } = string.Empty;
-        public bool Archive { get; set; }
-        public bool Status {get;set;}
+        public string Archive { get; set; }
+        public string Status {get;set;}
         public Guid? ClientId{get;set;}
         [ForeignKey(nameof(ClientId))]
         public PersistenceClient Client { get; set; }

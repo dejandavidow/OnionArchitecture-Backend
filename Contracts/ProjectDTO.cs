@@ -12,8 +12,8 @@ namespace Contracts
         public string ProjectName { get; set; }
         [MaxLength(500, ErrorMessage = "Max characters are 500.")]
         public string Description { get; set; } = string.Empty;
-        public bool Archive { get; set; }
-        public bool Status { get; set; }
+        public string Archive { get; set; } = "No-Archive";
+        public string Status { get; set; } = "active";
         [Required(ErrorMessage ="This Field is required.")]
         public string ClientId { get; set; }
         [Required(ErrorMessage = "This Field is required.")]
