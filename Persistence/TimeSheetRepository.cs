@@ -11,11 +11,12 @@ internal sealed class TimeSheetRepository : ITimeSheetRepository
     private readonly RepositoryDbContext _dbContext;
     public TimeSheetRepository(RepositoryDbContext dbContext)
     {
-        _dbContext=dbContext;
+        _dbContext = dbContext;
     }
-    public async Task<IEnumerable<TimeSheet>> GetTimeSheetAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<TimeSheet>> GetTimeSheetAsync(TimeSheetParams timesheetParams, CancellationToken cancellationToken = default)
     {
         return (await _dbContext.TimeSheets
+        .Where(x => x.ClientId.ToString() == timesheetParams.ClientId || x.ProjectId.ToString() == timesheetParams.ProjectId || x.CategoryId.ToString() == timesheetParams.CategoryId || timesheetParams.StartDate <= x.Date & timesheetParams.EndDate >= x.Date)
         .Include(x => x.Client)
         .Include(x => x.Project)
         .ThenInclude(x => x.Member)
@@ -42,7 +43,8 @@ internal sealed class TimeSheetRepository : ITimeSheetRepository
         .Include(x => x.Category)
         .Include(x => x.Client)
         .Include(x => x.Project)
-        .ThenInclude( x => x.Member).AsNoTracking()
+        .ThenInclude( x => x.Member)
+        .AsNoTracking()
         .FirstOrDefaultAsync(x => x.Id == id,cancellationToken);
         return new TimeSheet
         (
@@ -132,7 +134,7 @@ internal sealed class TimeSheetRepository : ITimeSheetRepository
     }
     public async Task UpdateTimeSheet(TimeSheet timesheet,CancellationToken cancellationToken = default)
     {
-        var persTS = await _dbContext.TimeSheets.FirstOrDefaultAsync(x => x.Id == timesheet.Id);
+        var persTS = await _dbContext.TimeSheets.AsNoTracking().FirstOrDefaultAsync(x => x.Id == timesheet.Id);
         persTS.Id = timesheet.Id;
         persTS.Description = timesheet.Description;
         persTS.Time = timesheet.Time;

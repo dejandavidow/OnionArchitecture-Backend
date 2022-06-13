@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Contracts;
 using Microsoft.AspNetCore.Authorization;
+using Domain;
 
 //[Authorize]
 [ApiController]
@@ -17,9 +18,9 @@ public class TimeSheetController : ControllerBase
         _serviceManager = serviceManager;
     }
     [HttpGet]
-    public async Task<IActionResult> GetTimeSheets(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetTimeSheets([FromQuery] TimeSheetParams timesheetParams,CancellationToken cancellationToken)
     {
-        var timesheets = await _serviceManager.TimeSheetService.GetAllAsync(cancellationToken);
+        var timesheets = await _serviceManager.TimeSheetService.GetAllAsync(timesheetParams,cancellationToken);
         return Ok(timesheets);
     }
     [HttpGet("{id}")]

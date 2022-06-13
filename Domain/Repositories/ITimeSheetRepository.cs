@@ -6,7 +6,7 @@ namespace Domain
 {
     public interface ITimeSheetRepository
     {
-        Task<IEnumerable<TimeSheet>> GetTimeSheetAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<TimeSheet>> GetTimeSheetAsync(TimeSheetParams timesheetParams, CancellationToken cancellationToken = default);
         Task<TimeSheet> GetTimeSheetById(Guid id,CancellationToken cancellationToken = default);
         Task InsertTimeSheet(TimeSheet timeSheet,CancellationToken cancellationToken = default);
         Task UpdateTimeSheet(TimeSheet timesheet,CancellationToken cancellationToken = default);

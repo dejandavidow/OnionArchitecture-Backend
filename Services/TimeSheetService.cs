@@ -57,9 +57,9 @@ namespace Services
             }
         }
 
-        public async Task<IEnumerable<TimeSheetDTO>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<TimeSheetDTO>> GetAllAsync(TimeSheetParams timesheetParams,CancellationToken cancellationToken = default)
         {
-           return (await _repositoryManager.TimeSheetRepository.GetTimeSheetAsync(cancellationToken)).Select(timesheet => new TimeSheetDTO()
+           return (await _repositoryManager.TimeSheetRepository.GetTimeSheetAsync(timesheetParams,cancellationToken)).Select(timesheet => new TimeSheetDTO()
            {
                Id = timesheet.Id.ToString(),
                Description = timesheet.Description,
