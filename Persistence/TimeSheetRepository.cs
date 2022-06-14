@@ -13,10 +13,33 @@ internal sealed class TimeSheetRepository : ITimeSheetRepository
     {
         _dbContext = dbContext;
     }
-    public async Task<IEnumerable<TimeSheet>> GetTimeSheetAsync(TimeSheetParams timesheetParams, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<TimeSheet>> GetFilteredTS(TimeSheetParams timesheetParams, CancellationToken cancellationToken = default)
     {
         return (await _dbContext.TimeSheets
-        .Where(x => x.ClientId.ToString() == timesheetParams.ClientId || x.ProjectId.ToString() == timesheetParams.ProjectId || x.CategoryId.ToString() == timesheetParams.CategoryId || timesheetParams.StartDate <= x.Date & timesheetParams.EndDate >= x.Date)
+       .Where(x => timesheetParams.FilterStart <= x.Date & timesheetParams.FilterEnd >= x.Date)
+       .Include(x => x.Client)
+       .Include(x => x.Project)
+       .ThenInclude(x => x.Member)
+       .Include(x => x.Category)
+       .AsNoTracking()
+       .ToListAsync(cancellationToken))
+       .Select(timesheet => new TimeSheet(
+           timesheet.Id,
+           timesheet.Description,
+           timesheet.Time,
+           timesheet.OverTime,
+           timesheet.Date,
+           new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+           new Project(timesheet.Project.Id, timesheet.Project.ProjectName, timesheet.Project.Description, timesheet.Project.Archive, timesheet.Project.Status,
+           new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+           new Member(timesheet.Project.Member.Id, timesheet.Project.Member.Name, timesheet.Project.Member.Username, timesheet.Project.Member.Email, timesheet.Project.Member.Hours, timesheet.Project.Member.Status, timesheet.Project.Member.Role, timesheet.Project.Member.Password)),
+           new Category(timesheet.Category.Id, timesheet.Category.Name)
+       ));
+    }
+    public async Task<IEnumerable<TimeSheet>> GetTimeSheetAsync(FetchParams fetchParams,CancellationToken cancellationToken = default)
+    {
+        return (await _dbContext.TimeSheets
+        .Where(x => fetchParams.Start <= x.Date & fetchParams.End >= x.Date)
         .Include(x => x.Client)
         .Include(x => x.Project)
         .ThenInclude(x => x.Member)
@@ -89,7 +112,7 @@ internal sealed class TimeSheetRepository : ITimeSheetRepository
            Description = timeSheet.Description,
            Time =timeSheet.Time,
            OverTime = timeSheet.OverTime,
-           Date = timeSheet.Date,
+            Date = timeSheet.Date,
            Client = new Persistence.Models.PersistenceClient
            {
                 Id = timeSheet.Client.Id,

@@ -17,10 +17,16 @@ public class TimeSheetController : ControllerBase
     {
         _serviceManager = serviceManager;
     }
-    [HttpGet]
-    public async Task<IActionResult> GetTimeSheets([FromQuery] TimeSheetParams timesheetParams,CancellationToken cancellationToken)
+    [HttpGet("filters")]
+    public async Task<IActionResult> GetFilterTimeSheets([FromQuery] TimeSheetParams timesheetParams,CancellationToken cancellationToken)
     {
-        var timesheets = await _serviceManager.TimeSheetService.GetAllAsync(timesheetParams,cancellationToken);
+        var timesheets = await _serviceManager.TimeSheetService.GetFilteredTS(timesheetParams,cancellationToken);
+        return Ok(timesheets);
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetTimeSheets([FromQuery] FetchParams fetchParams,CancellationToken cancellationToken)
+    {
+        var timesheets = await _serviceManager.TimeSheetService.GetAllAsync(fetchParams,cancellationToken);
         return Ok(timesheets);
     }
     [HttpGet("{id}")]

@@ -12,7 +12,7 @@ namespace Persistence.Models
         [Required(AllowEmptyStrings =false,ErrorMessage ="This field is required.")]
         public float Time {get;set;}
         public float OverTime {get;set;}
-        public DateTime Date{get;set;}
+        public DateTime Date { get;set; }
         
         public Guid? ClientId{get;set;}
         [ForeignKey(nameof(ClientId))]

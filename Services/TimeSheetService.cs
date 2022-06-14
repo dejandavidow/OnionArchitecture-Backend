@@ -13,7 +13,22 @@ namespace Services
     {
       private readonly IRepositoryManager _repositoryManager;
       public TimeSheetService(IRepositoryManager repositoryManager) => _repositoryManager = repositoryManager;
-        
+       public async Task<IEnumerable<TimeSheetDTO>> GetFilteredTS(TimeSheetParams timesheetParams, CancellationToken cancellationToken = default)
+        {
+            return (await _repositoryManager.TimeSheetRepository.GetFilteredTS(timesheetParams,cancellationToken)).Select(timesheet => new TimeSheetDTO()
+            {
+                Id = timesheet.Id.ToString(),
+                Description = timesheet.Description,
+                Time = timesheet.Time,
+                OverTime = timesheet.OverTime,
+                Date = timesheet.Date,
+                ClientId = timesheet.Client.Id.ToString(),
+                ProjectId = timesheet.Project.Id.ToString(),
+                CategoryId = timesheet.Category.Id.ToString(),
+            }
+          );
+        }
+
         public async Task CreateAsync(TimeSheetDTO timesheetDTO, CancellationToken cancellationToken = default)
         {
             try
@@ -57,9 +72,9 @@ namespace Services
             }
         }
 
-        public async Task<IEnumerable<TimeSheetDTO>> GetAllAsync(TimeSheetParams timesheetParams,CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<TimeSheetDTO>> GetAllAsync(FetchParams fetchParams,CancellationToken cancellationToken = default)
         {
-           return (await _repositoryManager.TimeSheetRepository.GetTimeSheetAsync(timesheetParams,cancellationToken)).Select(timesheet => new TimeSheetDTO()
+           return (await _repositoryManager.TimeSheetRepository.GetTimeSheetAsync(fetchParams,cancellationToken)).Select(timesheet => new TimeSheetDTO()
            {
                Id = timesheet.Id.ToString(),
                Description = timesheet.Description,
