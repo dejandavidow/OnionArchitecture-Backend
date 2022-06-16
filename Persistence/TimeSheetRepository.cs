@@ -15,26 +15,182 @@ internal sealed class TimeSheetRepository : ITimeSheetRepository
     }
     public async Task<IEnumerable<TimeSheet>> GetFilteredTS(TimeSheetParams timesheetParams, CancellationToken cancellationToken = default)
     {
-        return (await _dbContext.TimeSheets
-       .Where(x => timesheetParams.FilterStart <= x.Date & timesheetParams.FilterEnd >= x.Date)
-       .Include(x => x.Client)
-       .Include(x => x.Project)
-       .ThenInclude(x => x.Member)
-       .Include(x => x.Category)
-       .AsNoTracking()
-       .ToListAsync(cancellationToken))
-       .Select(timesheet => new TimeSheet(
-           timesheet.Id,
-           timesheet.Description,
-           timesheet.Time,
-           timesheet.OverTime,
-           timesheet.Date,
-           new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
-           new Project(timesheet.Project.Id, timesheet.Project.ProjectName, timesheet.Project.Description, timesheet.Project.Archive, timesheet.Project.Status,
-           new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
-           new Member(timesheet.Project.Member.Id, timesheet.Project.Member.Name, timesheet.Project.Member.Username, timesheet.Project.Member.Email, timesheet.Project.Member.Hours, timesheet.Project.Member.Status, timesheet.Project.Member.Role, timesheet.Project.Member.Password)),
-           new Category(timesheet.Category.Id, timesheet.Category.Name)
-       ));
+        if (timesheetParams.FilterStart == null && timesheetParams.FilterEnd == null && timesheetParams.CategoryId == null && timesheetParams.ClientId == null && timesheetParams.ProjectId == null)
+        {
+            return (await _dbContext.TimeSheets
+           .Include(x => x.Client)
+           .Include(x => x.Project)
+           .ThenInclude(x => x.Member)
+           .Include(x => x.Category)
+           .ToListAsync(cancellationToken))
+           .Select(timesheet => new TimeSheet(
+               timesheet.Id,
+               timesheet.Description,
+               timesheet.Time,
+               timesheet.OverTime,
+               timesheet.Date,
+               new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+               new Project(timesheet.Project.Id, timesheet.Project.ProjectName, timesheet.Project.Description, timesheet.Project.Archive, timesheet.Project.Status,
+               new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+               new Member(timesheet.Project.Member.Id, timesheet.Project.Member.Name, timesheet.Project.Member.Username, timesheet.Project.Member.Email, timesheet.Project.Member.Hours, timesheet.Project.Member.Status, timesheet.Project.Member.Role, timesheet.Project.Member.Password)),
+               new Category(timesheet.Category.Id, timesheet.Category.Name)
+           ));
+        }
+        else if (timesheetParams.FilterStart != null && timesheetParams.FilterEnd != null && timesheetParams.CategoryId == null && timesheetParams.ClientId == null && timesheetParams.ProjectId == null)
+        {
+            return (await _dbContext.TimeSheets
+           .Where(x => (x.Date >= timesheetParams.FilterStart & x.Date <= timesheetParams.FilterEnd))
+           .Include(x => x.Client)
+           .Include(x => x.Project)
+           .ThenInclude(x => x.Member)
+           .Include(x => x.Category)
+           .ToListAsync(cancellationToken))
+           .Select(timesheet => new TimeSheet(
+               timesheet.Id,
+               timesheet.Description,
+               timesheet.Time,
+               timesheet.OverTime,
+               timesheet.Date,
+               new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+               new Project(timesheet.Project.Id, timesheet.Project.ProjectName, timesheet.Project.Description, timesheet.Project.Archive, timesheet.Project.Status,
+               new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+               new Member(timesheet.Project.Member.Id, timesheet.Project.Member.Name, timesheet.Project.Member.Username, timesheet.Project.Member.Email, timesheet.Project.Member.Hours, timesheet.Project.Member.Status, timesheet.Project.Member.Role, timesheet.Project.Member.Password)),
+               new Category(timesheet.Category.Id, timesheet.Category.Name)
+           ));
+        }
+        else if (timesheetParams.FilterStart == null && timesheetParams.FilterEnd == null && timesheetParams.CategoryId != null && timesheetParams.ClientId == null && timesheetParams.ProjectId == null)
+        {
+            return (await _dbContext.TimeSheets
+           .Where(x => x.Category.Id.ToString() == timesheetParams.CategoryId)
+           .Include(x => x.Client)
+           .Include(x => x.Project)
+           .ThenInclude(x => x.Member)
+           .Include(x => x.Category)
+           .ToListAsync(cancellationToken))
+           .Select(timesheet => new TimeSheet(
+               timesheet.Id,
+               timesheet.Description,
+               timesheet.Time,
+               timesheet.OverTime,
+               timesheet.Date,
+               new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+               new Project(timesheet.Project.Id, timesheet.Project.ProjectName, timesheet.Project.Description, timesheet.Project.Archive, timesheet.Project.Status,
+               new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+               new Member(timesheet.Project.Member.Id, timesheet.Project.Member.Name, timesheet.Project.Member.Username, timesheet.Project.Member.Email, timesheet.Project.Member.Hours, timesheet.Project.Member.Status, timesheet.Project.Member.Role, timesheet.Project.Member.Password)),
+               new Category(timesheet.Category.Id, timesheet.Category.Name)
+           ));
+        }
+        else if (timesheetParams.FilterStart == null && timesheetParams.FilterEnd == null && timesheetParams.CategoryId == null && timesheetParams.ClientId != null && timesheetParams.ProjectId == null)
+        {
+            return (await _dbContext.TimeSheets
+           .Where(x => x.Client.Id.ToString() == timesheetParams.ClientId)
+           .Include(x => x.Client)
+           .Include(x => x.Project)
+           .ThenInclude(x => x.Member)
+           .Include(x => x.Category)
+           .ToListAsync(cancellationToken))
+           .Select(timesheet => new TimeSheet(
+               timesheet.Id,
+               timesheet.Description,
+               timesheet.Time,
+               timesheet.OverTime,
+               timesheet.Date,
+               new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+               new Project(timesheet.Project.Id, timesheet.Project.ProjectName, timesheet.Project.Description, timesheet.Project.Archive, timesheet.Project.Status,
+               new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+               new Member(timesheet.Project.Member.Id, timesheet.Project.Member.Name, timesheet.Project.Member.Username, timesheet.Project.Member.Email, timesheet.Project.Member.Hours, timesheet.Project.Member.Status, timesheet.Project.Member.Role, timesheet.Project.Member.Password)),
+               new Category(timesheet.Category.Id, timesheet.Category.Name)
+           ));
+        }
+        else if (timesheetParams.FilterStart== null && timesheetParams.FilterEnd == null && timesheetParams.CategoryId == null && timesheetParams.ClientId == null && timesheetParams.ProjectId != null)
+        {
+            return (await _dbContext.TimeSheets
+           .Where(x => x.Project.Id.ToString() == timesheetParams.ProjectId)
+           .Include(x => x.Client)
+           .Include(x => x.Project)
+           .ThenInclude(x => x.Member)
+           .Include(x => x.Category)
+           .ToListAsync(cancellationToken))
+           .Select(timesheet => new TimeSheet(
+               timesheet.Id,
+               timesheet.Description,
+               timesheet.Time,
+               timesheet.OverTime,
+               timesheet.Date,
+               new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+               new Project(timesheet.Project.Id, timesheet.Project.ProjectName, timesheet.Project.Description, timesheet.Project.Archive, timesheet.Project.Status,
+               new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+               new Member(timesheet.Project.Member.Id, timesheet.Project.Member.Name, timesheet.Project.Member.Username, timesheet.Project.Member.Email, timesheet.Project.Member.Hours, timesheet.Project.Member.Status, timesheet.Project.Member.Role, timesheet.Project.Member.Password)),
+               new Category(timesheet.Category.Id, timesheet.Category.Name)
+           ));
+        }
+        else if (timesheetParams.FilterStart != null && timesheetParams.FilterEnd != null && timesheetParams.CategoryId != null && timesheetParams.ClientId == null && timesheetParams.ProjectId == null)
+        {
+            return (await _dbContext.TimeSheets
+          .Where(x => x.Category.Id.ToString() == timesheetParams.CategoryId && (x.Date >= timesheetParams.FilterStart & x.Date <= timesheetParams.FilterEnd))
+          .Include(x => x.Client)
+          .Include(x => x.Project)
+          .ThenInclude(x => x.Member)
+          .Include(x => x.Category)
+          .ToListAsync(cancellationToken))
+          .Select(timesheet => new TimeSheet(
+              timesheet.Id,
+              timesheet.Description,
+              timesheet.Time,
+              timesheet.OverTime,
+              timesheet.Date,
+              new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+              new Project(timesheet.Project.Id, timesheet.Project.ProjectName, timesheet.Project.Description, timesheet.Project.Archive, timesheet.Project.Status,
+              new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+              new Member(timesheet.Project.Member.Id, timesheet.Project.Member.Name, timesheet.Project.Member.Username, timesheet.Project.Member.Email, timesheet.Project.Member.Hours, timesheet.Project.Member.Status, timesheet.Project.Member.Role, timesheet.Project.Member.Password)),
+              new Category(timesheet.Category.Id, timesheet.Category.Name)
+          ));
+        }
+        else if (timesheetParams.FilterStart != null && timesheetParams.FilterEnd != null && timesheetParams.CategoryId != null && timesheetParams.ClientId != null && timesheetParams.ProjectId == null)
+        {
+            return (await _dbContext.TimeSheets
+            .Where(x => x.Category.Id.ToString() == timesheetParams.CategoryId && x.Client.Id.ToString() == timesheetParams.ClientId && (x.Date >= timesheetParams.FilterStart & x.Date <= timesheetParams.FilterEnd))
+            .Include(x => x.Client)
+            .Include(x => x.Project)
+            .ThenInclude(x => x.Member)
+            .Include(x => x.Category)
+            .ToListAsync(cancellationToken))
+            .Select(timesheet => new TimeSheet(
+                timesheet.Id,
+                timesheet.Description,
+                timesheet.Time,
+                timesheet.OverTime,
+                timesheet.Date,
+                new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+                new Project(timesheet.Project.Id, timesheet.Project.ProjectName, timesheet.Project.Description, timesheet.Project.Archive, timesheet.Project.Status,
+                new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+                new Member(timesheet.Project.Member.Id, timesheet.Project.Member.Name, timesheet.Project.Member.Username, timesheet.Project.Member.Email, timesheet.Project.Member.Hours, timesheet.Project.Member.Status, timesheet.Project.Member.Role, timesheet.Project.Member.Password)),
+                new Category(timesheet.Category.Id, timesheet.Category.Name)
+            ));
+        }
+        else
+        {
+            return (await _dbContext.TimeSheets
+           .Where(x => x.Project.Id.ToString() == timesheetParams.ProjectId && x.Category.Id.ToString() == timesheetParams.CategoryId && x.Client.Id.ToString() == timesheetParams.ClientId && (x.Date >= timesheetParams.FilterStart & x.Date <= timesheetParams.FilterEnd))
+           .Include(x => x.Client)
+           .Include(x => x.Project)
+           .ThenInclude(x => x.Member)
+           .Include(x => x.Category)
+           .ToListAsync(cancellationToken))
+           .Select(timesheet => new TimeSheet(
+               timesheet.Id,
+               timesheet.Description,
+               timesheet.Time,
+               timesheet.OverTime,
+               timesheet.Date,
+               new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+               new Project(timesheet.Project.Id, timesheet.Project.ProjectName, timesheet.Project.Description, timesheet.Project.Archive, timesheet.Project.Status,
+               new Client(timesheet.Client.Id, timesheet.Client.ClientName, timesheet.Client.Adress, timesheet.Client.City, timesheet.Client.PostalCode, timesheet.Client.Country),
+               new Member(timesheet.Project.Member.Id, timesheet.Project.Member.Name, timesheet.Project.Member.Username, timesheet.Project.Member.Email, timesheet.Project.Member.Hours, timesheet.Project.Member.Status, timesheet.Project.Member.Role, timesheet.Project.Member.Password)),
+               new Category(timesheet.Category.Id, timesheet.Category.Name)
+           ));
+        } 
+
     }
     public async Task<IEnumerable<TimeSheet>> GetTimeSheetAsync(FetchParams fetchParams,CancellationToken cancellationToken = default)
     {
