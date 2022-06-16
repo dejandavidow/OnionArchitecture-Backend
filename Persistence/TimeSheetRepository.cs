@@ -18,6 +18,7 @@ internal sealed class TimeSheetRepository : ITimeSheetRepository
         if (timesheetParams.FilterStart == null && timesheetParams.FilterEnd == null && timesheetParams.CategoryId == null && timesheetParams.ClientId == null && timesheetParams.ProjectId == null)
         {
             return (await _dbContext.TimeSheets
+           .OrderBy(x => x.Date)
            .Include(x => x.Client)
            .Include(x => x.Project)
            .ThenInclude(x => x.Member)

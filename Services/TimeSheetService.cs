@@ -21,7 +21,7 @@ namespace Services
                 Description = timesheet.Description,
                 Time = timesheet.Time,
                 OverTime = timesheet.OverTime,
-                Date = timesheet.Date,
+                Date = timesheet.Date.ToShortDateString(),
                 ClientId = timesheet.Client.Id.ToString(),
                 ProjectId = timesheet.Project.Id.ToString(),
                 CategoryId = timesheet.Category.Id.ToString(),
@@ -36,7 +36,7 @@ namespace Services
                 var client = timesheetDTO.ClientId!= null?(await _repositoryManager.ClientRepository.GetByIdAsync(Guid.Parse(timesheetDTO.ClientId), cancellationToken)): null;
                 var project = timesheetDTO.ProjectId!= null?(await _repositoryManager.ProjectRepository.GetProjectById(Guid.Parse(timesheetDTO.ProjectId), cancellationToken)): null;
                 var category = timesheetDTO.CategoryId!= null?(await _repositoryManager.CategoryRepository.GetCategoryById(Guid.Parse(timesheetDTO.CategoryId), cancellationToken)): null;
-            var domaintimesheet = new TimeSheet(Guid.NewGuid(),timesheetDTO.Description,timesheetDTO.Time,timesheetDTO.OverTime,timesheetDTO.Date, client, project, category);
+            var domaintimesheet = new TimeSheet(Guid.NewGuid(),timesheetDTO.Description,timesheetDTO.Time,timesheetDTO.OverTime,new DateTime(), client, project, category);
             await _repositoryManager.TimeSheetRepository.InsertTimeSheet(domaintimesheet);
             await _repositoryManager.SaveChangesAsync(cancellationToken);
             }
@@ -72,9 +72,9 @@ namespace Services
             }
         }
 
-        public async Task<IEnumerable<TimeSheetDTO>> GetAllAsync(FetchParams fetchParams,CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<CalendarTsDTO>> GetAllAsync(FetchParams fetchParams,CancellationToken cancellationToken = default)
         {
-           return (await _repositoryManager.TimeSheetRepository.GetTimeSheetAsync(fetchParams,cancellationToken)).Select(timesheet => new TimeSheetDTO()
+           return (await _repositoryManager.TimeSheetRepository.GetTimeSheetAsync(fetchParams,cancellationToken)).Select(timesheet => new CalendarTsDTO()
            {
                Id = timesheet.Id.ToString(),
                Description = timesheet.Description,
@@ -98,7 +98,7 @@ namespace Services
                Description = reuslt.Description,
                Time = reuslt.Time,
                OverTime = reuslt.OverTime,
-               Date = reuslt.Date,
+               Date = reuslt.Date.ToShortDateString(),
                ClientId = reuslt.Client.Id.ToString(),
                ProjectId = reuslt.Project.Id.ToString(),
                CategoryId = reuslt.Category.Id.ToString(),
