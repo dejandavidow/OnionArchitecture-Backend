@@ -17,10 +17,10 @@ namespace Services
         {
             _repositoryManager = repositoryManager;
         }
-        public async Task<MemberDTO> Authenticate(string username, string password)
+        public async Task<GetMemberDTO> Authenticate(string username, string password)
         {
             var member = await _repositoryManager.MemberRepository.Authenticate(username, password);
-            return new MemberDTO()
+            return new GetMemberDTO()
             {
                 Id = member.Id.ToString(),
                 Name = member.Name,

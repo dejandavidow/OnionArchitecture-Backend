@@ -9,7 +9,7 @@ namespace Services.Abstractions
 {
 public interface IMemberService
     {
-        Task<MemberDTO> Authenticate(string username,string password);
+        Task<GetMemberDTO> Authenticate(string username,string password);
         Task<int> SearchCountAsync(string search);
         Task<int> FilterCountAsync(string letter);
         Task<IEnumerable<GetMemberDTO>> FilterAsync(MemberParams memberParams, string letter);

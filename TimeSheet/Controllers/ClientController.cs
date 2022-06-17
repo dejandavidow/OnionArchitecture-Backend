@@ -7,7 +7,7 @@ using Contracts;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
-//[Authorize]
+[Authorize]
 [ApiController]
 [Route("api/Client")]
 public class ClientController : ControllerBase

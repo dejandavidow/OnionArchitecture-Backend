@@ -6,7 +6,7 @@ using System;
 using Contracts;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
-//[Authorize]
+[Authorize]
 [ApiController]
 [Route("api/Member")]
 public class MemberController : ControllerBase

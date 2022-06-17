@@ -13,7 +13,12 @@ namespace Services
     {
       private readonly IRepositoryManager _repositoryManager;
       public TimeSheetService(IRepositoryManager repositoryManager) => _repositoryManager = repositoryManager;
-       public async Task<IEnumerable<TimeSheetDTO>> GetFilteredTS(TimeSheetParams timesheetParams, CancellationToken cancellationToken = default)
+
+        public async Task<int> GetCount(TimeSheetParams timesheetParams)
+        {
+            return await _repositoryManager.TimeSheetRepository.GetCount(timesheetParams);
+        }
+        public async Task<IEnumerable<TimeSheetDTO>> GetFilteredTS(TimeSheetParams timesheetParams, CancellationToken cancellationToken = default)
         {
             return (await _repositoryManager.TimeSheetRepository.GetFilteredTS(timesheetParams,cancellationToken)).Select(timesheet => new TimeSheetDTO()
             {
@@ -29,14 +34,14 @@ namespace Services
           );
         }
 
-        public async Task CreateAsync(TimeSheetDTO timesheetDTO, CancellationToken cancellationToken = default)
+        public async Task CreateAsync(CreateTimeSheetDTO timesheetDTO, CancellationToken cancellationToken = default)
         {
             try
             {
                 var client = timesheetDTO.ClientId!= null?(await _repositoryManager.ClientRepository.GetByIdAsync(Guid.Parse(timesheetDTO.ClientId), cancellationToken)): null;
                 var project = timesheetDTO.ProjectId!= null?(await _repositoryManager.ProjectRepository.GetProjectById(Guid.Parse(timesheetDTO.ProjectId), cancellationToken)): null;
                 var category = timesheetDTO.CategoryId!= null?(await _repositoryManager.CategoryRepository.GetCategoryById(Guid.Parse(timesheetDTO.CategoryId), cancellationToken)): null;
-            var domaintimesheet = new TimeSheet(Guid.NewGuid(),timesheetDTO.Description,timesheetDTO.Time,timesheetDTO.OverTime,new DateTime(), client, project, category);
+            var domaintimesheet = new TimeSheet(Guid.NewGuid(),timesheetDTO.Description,timesheetDTO.Time,timesheetDTO.OverTime,timesheetDTO.Date, client, project, category);
             await _repositoryManager.TimeSheetRepository.InsertTimeSheet(domaintimesheet);
             await _repositoryManager.SaveChangesAsync(cancellationToken);
             }

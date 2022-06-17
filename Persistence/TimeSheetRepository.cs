@@ -13,6 +13,41 @@ internal sealed class TimeSheetRepository : ITimeSheetRepository
     {
         _dbContext = dbContext;
     }
+    public async Task<int> GetCount(TimeSheetParams timesheetParams)
+    {
+        if(timesheetParams.FilterStart == null && timesheetParams.FilterEnd == null && timesheetParams.CategoryId == null && timesheetParams.ClientId == null && timesheetParams.ProjectId == null)
+        {
+            return await _dbContext.TimeSheets.CountAsync();
+        }
+        else if (timesheetParams.FilterStart != null && timesheetParams.FilterEnd != null && timesheetParams.CategoryId == null && timesheetParams.ClientId == null && timesheetParams.ProjectId == null)
+        {
+            return await _dbContext.TimeSheets.Where(x => (x.Date >= timesheetParams.FilterStart & x.Date <= timesheetParams.FilterEnd)).CountAsync();
+        }
+        else if (timesheetParams.FilterStart == null && timesheetParams.FilterEnd == null && timesheetParams.CategoryId != null && timesheetParams.ClientId == null && timesheetParams.ProjectId == null)
+        {
+            return await _dbContext.TimeSheets.Where(x => x.Category.Id.ToString() == timesheetParams.CategoryId).CountAsync();
+        }
+        else if (timesheetParams.FilterStart == null && timesheetParams.FilterEnd == null && timesheetParams.CategoryId == null && timesheetParams.ClientId != null && timesheetParams.ProjectId == null)
+        {
+            return await _dbContext.TimeSheets.Where(x => x.Client.Id.ToString() == timesheetParams.ClientId).CountAsync();
+        }
+        else if (timesheetParams.FilterStart == null && timesheetParams.FilterEnd == null && timesheetParams.CategoryId == null && timesheetParams.ClientId == null && timesheetParams.ProjectId != null)
+        {
+            return await _dbContext.TimeSheets.Where(x => x.Project.Id.ToString() == timesheetParams.ProjectId).CountAsync();
+        }
+        else if (timesheetParams.FilterStart != null && timesheetParams.FilterEnd != null && timesheetParams.CategoryId != null && timesheetParams.ClientId == null && timesheetParams.ProjectId == null)
+        {
+            return await _dbContext.TimeSheets.Where(x => x.Category.Id.ToString() == timesheetParams.CategoryId && (x.Date >= timesheetParams.FilterStart & x.Date <= timesheetParams.FilterEnd)).CountAsync();
+        }
+        else if (timesheetParams.FilterStart != null && timesheetParams.FilterEnd != null && timesheetParams.CategoryId != null && timesheetParams.ClientId != null && timesheetParams.ProjectId == null)
+        {
+            return await _dbContext.TimeSheets.Where(x => x.Category.Id.ToString() == timesheetParams.CategoryId && x.Client.Id.ToString() == timesheetParams.ClientId && (x.Date >= timesheetParams.FilterStart & x.Date <= timesheetParams.FilterEnd)).CountAsync();
+        }
+        else
+        {
+            return await _dbContext.TimeSheets.Where(x => x.Project.Id.ToString() == timesheetParams.ProjectId && x.Category.Id.ToString() == timesheetParams.CategoryId && x.Client.Id.ToString() == timesheetParams.ClientId && (x.Date >= timesheetParams.FilterStart & x.Date <= timesheetParams.FilterEnd)).CountAsync();
+        }
+    }
     public async Task<IEnumerable<TimeSheet>> GetFilteredTS(TimeSheetParams timesheetParams, CancellationToken cancellationToken = default)
     {
         if (timesheetParams.FilterStart == null && timesheetParams.FilterEnd == null && timesheetParams.CategoryId == null && timesheetParams.ClientId == null && timesheetParams.ProjectId == null)
@@ -23,6 +58,8 @@ internal sealed class TimeSheetRepository : ITimeSheetRepository
            .Include(x => x.Project)
            .ThenInclude(x => x.Member)
            .Include(x => x.Category)
+           .Skip((timesheetParams.PageNumber - 1) * timesheetParams.PageSize)
+           .Take(timesheetParams.PageSize)
            .ToListAsync(cancellationToken))
            .Select(timesheet => new TimeSheet(
                timesheet.Id,
@@ -193,7 +230,7 @@ internal sealed class TimeSheetRepository : ITimeSheetRepository
         } 
 
     }
-    public async Task<IEnumerable<TimeSheet>> GetTimeSheetAsync(FetchParams fetchParams,CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<TimeSheet>> GetTimeSheetAsync(FetchParams fetchParams, CancellationToken cancellationToken = default)
     {
         return (await _dbContext.TimeSheets
         .Where(x => fetchParams.Start <= x.Date & fetchParams.End >= x.Date)
