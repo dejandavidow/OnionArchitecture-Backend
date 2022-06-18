@@ -1,12 +1,15 @@
+
+using Contracts.DTOs;
+using Contracts.Exceptions;
+using Domain.Entities;
+using Domain.Pagination;
+using Domain.Repositories;
+using Services.Abstractions;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Services.Abstractions;
-using System.Collections.Generic;
-using Domain;
-using Contracts;
-using Contracts.Exceptions;
-using System.Linq;
 
 namespace Services
 {

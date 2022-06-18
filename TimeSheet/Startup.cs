@@ -1,15 +1,20 @@
-using Domain;
+using Services.Abstractions;
+using Domain.Repositories;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Persistence;
-using Services.Abstractions;
+using System.Text;
 using TimeSheet.Extensions;
+using Services;
+
 namespace TimeSheet
 {
     public class Startup
@@ -24,8 +29,28 @@ namespace TimeSheet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication("BasicAuthentication")
-                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+            //services.AddAuthentication("BasicAuthentication")
+            //.AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+
+                    services.AddAuthentication(opt => {
+                        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    })
+                    .AddJwtBearer(options =>
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            ValidIssuer = "https://localhost:44381/",
+                            ValidAudience = "https://localhost:44381/",
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"))
+                        };
+                    });
+
+
             services.AddDbContext<RepositoryDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IServiceManager, ServiceManager>();
             services.AddScoped<IRepositoryManager, RepositoryManager>();
@@ -34,28 +59,28 @@ namespace TimeSheet
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TimeSheet", Version = "v1" });
-                c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+                var securitySchema = new OpenApiSecurityScheme
                 {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                     Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "basic",
                     In = ParameterLocation.Header,
-                    Description = "Basic Authorization header using the Bearer scheme."
-                });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    Reference = new OpenApiReference
                     {
-                          new OpenApiSecurityScheme
-                            {
-                                Reference = new OpenApiReference
-                                {
-                                    Type = ReferenceType.SecurityScheme,
-                                    Id = "basic"
-                                }
-                            },
-                            new string[] {}
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
                     }
-                });
+                };
+
+                c.AddSecurityDefinition("Bearer", securitySchema);
+
+                var securityRequirement = new OpenApiSecurityRequirement
+                {
+                    { securitySchema, new[] { "Bearer" } }
+                };
+
+                c.AddSecurityRequirement(securityRequirement);
             });
             services.AddCors(options =>
 {

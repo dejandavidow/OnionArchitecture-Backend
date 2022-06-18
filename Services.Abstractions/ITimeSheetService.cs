@@ -1,10 +1,9 @@
+using Contracts.DTOs;
+using Domain.Pagination;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Contracts;
-using Domain;
-
 namespace Services.Abstractions
 {
 public interface ITimeSheetService

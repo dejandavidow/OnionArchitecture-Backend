@@ -1,11 +1,13 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Contracts.Auth;
+using Contracts.DTOs;
+using Domain.Pagination;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
-using System.Threading.Tasks;
-using System.Threading;
-using System;
-using Contracts;
-using Domain;
-using Microsoft.AspNetCore.Authorization;
+
 [Authorize]
 [ApiController]
 [Route("api/Member")]
@@ -18,10 +20,10 @@ public class MemberController : ControllerBase
     }
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> Authenticate([FromBody] AuthenticateModel model)
+    public async Task<IActionResult> Login([FromBody] AuthModel user)
     {
-        var member = await _serviceManager.MemberService.Authenticate(model.Username,model.Password);
-        return Ok(member);
+        var token = await _serviceManager.MemberService.Authenticate(user.Username,user.Password);
+        return Ok(token);
     }
     [HttpGet("search-count")]
     public async Task<IActionResult> CountSearchMembers([FromQuery] string search)

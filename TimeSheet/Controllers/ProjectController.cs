@@ -1,11 +1,12 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Contracts.DTOs;
+using Domain.Pagination;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
-using System.Threading.Tasks;
-using System.Threading;
-using System;
-using Contracts;
-using Domain;
-using Microsoft.AspNetCore.Authorization;
+
 
 [Authorize]
 [ApiController]

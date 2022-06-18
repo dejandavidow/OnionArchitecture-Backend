@@ -1,11 +1,11 @@
+
+using Contracts.Exceptions;
 using Contracts.GlobalErrorHandling;
-//using LoggerService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
-using System.Net;
 using System;
-using Contracts.Exceptions;
+using System.Net;
 
 namespace TimeSheet.Extensions
 {
@@ -35,7 +35,15 @@ namespace TimeSheet.Extensions
                                 ErrorMessage = contextFeature.Error.Message
                             }.ToString());
                         }
-                        else if(contextFeature.Error is Exception){
+                        else if(contextFeature.Error is AuthException){
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = (int)HttpStatusCode.Unauthorized,
+                                ErrorMessage = contextFeature.Error.Message
+                            }.ToString());
+                        }
+                        else if (contextFeature.Error is Exception)
+                        {
                             await context.Response.WriteAsync(new ErrorDetails()
                             {
                                 StatusCode = (int)HttpStatusCode.InternalServerError,
@@ -43,7 +51,7 @@ namespace TimeSheet.Extensions
                             }.ToString());
                         }
                         //logger.LogError($"Something went wrong: {contextFeature.Error}");
-                        
+
                     }
                 });
             });

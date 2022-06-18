@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
-namespace Domain
+using Domain.Entities;
+using Domain.Pagination;
+
+namespace Domain.Repositories
 {
     public interface ITimeSheetRepository
     {

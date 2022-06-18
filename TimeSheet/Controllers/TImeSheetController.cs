@@ -1,12 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Contracts.DTOs;
+using Domain.Pagination;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
-using Contracts;
-using Microsoft.AspNetCore.Authorization;
-using Domain;
-
 [Authorize]
 [ApiController]
 [Route("api/TimeSheet")]

@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace Domain
+namespace Domain.Entities
 {
     public class Member
     {

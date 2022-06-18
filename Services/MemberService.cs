@@ -1,35 +1,42 @@
+
+using Contracts.Auth;
+using Contracts.DTOs;
+using Contracts.Exceptions;
+using Domain.Entities;
+using Domain.Pagination;
+using Domain.Repositories;
+using Services.Abstractions;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Services.Abstractions;
-using System.Collections.Generic;
-using Domain;
-using Contracts;
-using Contracts.Exceptions;
-using System.Linq;
 
 namespace Services
 {
     internal sealed class MemberService : IMemberService
     {
         private readonly IRepositoryManager _repositoryManager;
+      
         public MemberService(IRepositoryManager repositoryManager)
         {
             _repositoryManager = repositoryManager;
         }
-        public async Task<GetMemberDTO> Authenticate(string username, string password)
+        public async Task<AuthenticatedResponse> Authenticate(string username,string password)
         {
-            var member = await _repositoryManager.MemberRepository.Authenticate(username, password);
-            return new GetMemberDTO()
+            try
             {
-                Id = member.Id.ToString(),
-                Name = member.Name,
-                Username = member.Username,
-                Email = member.Email,
-                Hours = member.Hours,
-                Status = member.Status,
-                Role = member.Role
-            };
+                var token = await _repositoryManager.MemberRepository.Authenticate(username, password);
+                return new AuthenticatedResponse { Token = token };
+            }
+            catch(AuthException)
+            {
+                throw;
+            }
+            catch(Exception)
+            {
+                throw;
+            }
         }
         public async Task<int> SearchCountAsync(string search)
         {

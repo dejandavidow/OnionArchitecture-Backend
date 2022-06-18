@@ -1,15 +1,16 @@
+
+using Contracts.Auth;
+using Contracts.DTOs;
+using Domain.Pagination;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Contracts;
-using Domain;
-
 namespace Services.Abstractions
 {
 public interface IMemberService
     {
-        Task<GetMemberDTO> Authenticate(string username,string password);
+        Task<AuthenticatedResponse> Authenticate(string username,string password);
         Task<int> SearchCountAsync(string search);
         Task<int> FilterCountAsync(string letter);
         Task<IEnumerable<GetMemberDTO>> FilterAsync(MemberParams memberParams, string letter);
