@@ -9,7 +9,8 @@ namespace Domain.Repositories
 {
     public interface IMemberRepository
     {
-        Task<string> Authenticate(string username, string password);
+        public string Generate();
+        Task<Member> Authenticate(string username, string password);
         Task<int> SearchCountAsync(string search);
         Task<int> FilterCountAsync(string letter);
         Task<IEnumerable<Member>> FilterAsync(MemberParams memberParams, string letter);

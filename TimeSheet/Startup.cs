@@ -29,9 +29,6 @@ namespace TimeSheet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddAuthentication("BasicAuthentication")
-            //.AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
-
                     services.AddAuthentication(opt => {
                         opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                         opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -56,6 +53,35 @@ namespace TimeSheet
             services.AddScoped<IRepositoryManager, RepositoryManager>();
             
             services.AddControllers();
+            /*services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "BasicAuth", Version = "v1" });
+                c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "basic",
+                    In = ParameterLocation.Header,
+                    Description = "Basic Authorization header using the Bearer scheme."
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                          new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "basic"
+                                }
+                            },
+                            new string[] {}
+                    }
+                });
+            });*/
+
+            /*services.AddAuthentication("BasicAuthentication")
+    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);*/
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TimeSheet", Version = "v1" });
@@ -82,6 +108,7 @@ namespace TimeSheet
 
                 c.AddSecurityRequirement(securityRequirement);
             });
+       
             services.AddCors(options =>
 {
             options.AddPolicy(name: "AllowOrigin",

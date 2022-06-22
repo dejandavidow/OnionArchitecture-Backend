@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 namespace Services
 {
     internal sealed class MemberService : IMemberService
@@ -22,12 +21,18 @@ namespace Services
         {
             _repositoryManager = repositoryManager;
         }
-        public async Task<AuthenticatedResponse> Authenticate(string username,string password)
+        public async Task<AuthResponse> Authenticate(string username,string password)
         {
             try
             {
-                var token = await _repositoryManager.MemberRepository.Authenticate(username, password);
-                return new AuthenticatedResponse { Token = token };
+                var member = await  _repositoryManager.MemberRepository.Authenticate(username, password);
+                return new AuthResponse
+                {
+                    Id = member.Id.ToString(),
+                    Name = member.Name,
+                    Role = member.Role,
+                    AccessToken = _repositoryManager.MemberRepository.Generate()
+                };
             }
             catch(AuthException)
             {

@@ -4,17 +4,16 @@ using Domain.Entities;
 using Domain.Pagination;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Persistence;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
 
 internal sealed class MemberRepository : IMemberRepository
 {
@@ -23,27 +22,29 @@ internal sealed class MemberRepository : IMemberRepository
     {
         _dbContext = dbContext;
     }
-    public async Task<string> Authenticate(string username, string password)
+    public  string Generate()
     {
-        var user = await _dbContext.Members.FirstOrDefaultAsync(x => x.Username == username && x.Password == password);
-        if(user == null)
+        var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
+        var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+        var tokeOptions = new JwtSecurityToken(
+            issuer: "https://localhost:44381/",
+            audience: "https://localhost:44381/",
+            claims: new List<Claim>(),
+            expires: DateTime.Now.AddMinutes(5),
+            signingCredentials: signinCredentials
+
+        );
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+        return tokenString;
+    }
+    public async Task<Member> Authenticate(string username, string password)
+    {
+        var member = await _dbContext.Members.FirstOrDefaultAsync(x => x.Username == username && x.Password == password);
+        if (member != null)
         {
-            throw new AuthException("Wrong username or password");
+            return new Member(member.Id, member.Name, member.Username, member.Email, member.Hours, member.Status, member.Role, member.Password);
         }
-        else
-        {
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
-            var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-            var tokeOptions = new JwtSecurityToken(
-                issuer: "https://localhost:44381/",
-                audience: "https://localhost:44381/",
-                claims: new List<Claim>(),
-                expires: DateTime.Now.AddMinutes(5),
-                signingCredentials: signinCredentials
-            );
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
-            return tokenString;
-        }
+        throw new AuthException("Wrong password or username");
     }
     public async Task<int> SearchCountAsync(string search)
     {
