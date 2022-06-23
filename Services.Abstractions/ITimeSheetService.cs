@@ -14,7 +14,7 @@ public interface ITimeSheetService
         Task<TimeSheetDTO> GetByIdAsync(Guid id,CancellationToken cancellationToken = default);
         Task CreateAsync(CreateTimeSheetDTO timesheetDTO,CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid id,CancellationToken cancellationToken = default);
-        Task UpdateAsync(Guid id,TimeSheetDTO timeSheetDTO,CancellationToken cancellationToken = default);
+        Task UpdateAsync(Guid id,CreateTimeSheetDTO timeSheetDTO,CancellationToken cancellationToken = default);
 }
 
 } 

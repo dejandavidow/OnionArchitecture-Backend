@@ -61,13 +61,13 @@ public class ProjectController : ControllerBase
         return NoContent();
     }
     [HttpPost]
-    public async Task<IActionResult> PostProject([FromBody] ProjectDTO projectDTO)
+    public async Task<IActionResult> PostProject([FromBody] PostProjectDTO projectDTO)
     {
         await _serviceManager.ProjectService.CreateAsync(projectDTO);
         return Ok();
     }
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProject(Guid id,[FromBody] ProjectDTO projectDTO,CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProject(Guid id,[FromBody] PostProjectDTO projectDTO,CancellationToken cancellationToken)
     {
         await _serviceManager.ProjectService.UpdateAsync(id,projectDTO,cancellationToken);
         return NoContent();

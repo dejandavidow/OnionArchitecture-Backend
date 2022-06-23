@@ -31,9 +31,12 @@ namespace Services
                 Time = timesheet.Time,
                 OverTime = timesheet.OverTime,
                 Date = timesheet.Date.ToShortDateString(),
-                ClientId = timesheet.Client.Id.ToString(),
-                ProjectId = timesheet.Project.Id.ToString(),
-                CategoryId = timesheet.Category.Id.ToString(),
+                CategoryDTO = new CategoryDTO { Id = timesheet.Category.Id.ToString() ,Name = timesheet.Category.Name},
+                ProjectDTO = new ProjectDTO {
+                    ClientDTO = new ClientDTO { Id = timesheet.Client.Id.ToString(), ClientName = timesheet.Client.ClientName, Adress = timesheet.Client.Adress, City = timesheet.Client.City, Country = timesheet.Client.Country, PostalCode = timesheet.Client.PostalCode },
+                    Id = timesheet.Project.Member.Id.ToString(),ProjectName = timesheet.Project.ProjectName,Description = timesheet.Project.Description,Archive = timesheet.Project.Archive,Status = timesheet.Project.Status,
+                    MemberDTO = new GetMemberDTO { Id = timesheet.Project.Member.Id.ToString(), Name = timesheet.Project.Member.Name, Username = timesheet.Project.Member.Username, Email = timesheet.Project.Member.Email, Status = timesheet.Project.Member.Status, Role = timesheet.Project.Member.Role, Hours = timesheet.Project.Member.Hours }
+                },
             }
           );
         }
@@ -100,17 +103,19 @@ namespace Services
         public async Task<TimeSheetDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
         try{
-           var reuslt = await _repositoryManager.TimeSheetRepository.GetTimeSheetById(id,cancellationToken);
+           var timesheet = await _repositoryManager.TimeSheetRepository.GetTimeSheetById(id,cancellationToken);
            var timeSheetDTO = new TimeSheetDTO()
            {
-                Id = reuslt.Id.ToString(),
-               Description = reuslt.Description,
-               Time = reuslt.Time,
-               OverTime = reuslt.OverTime,
-               Date = reuslt.Date.ToShortDateString(),
-               ClientId = reuslt.Client.Id.ToString(),
-               ProjectId = reuslt.Project.Id.ToString(),
-               CategoryId = reuslt.Category.Id.ToString(),
+                Id = timesheet.Id.ToString(),
+               Description = timesheet.Description,
+               Time = timesheet.Time,
+               OverTime = timesheet.OverTime,
+               Date = timesheet.Date.ToShortDateString(),
+               CategoryDTO = new CategoryDTO { Id = timesheet.Category.Id.ToString(), Name = timesheet.Category.Name },
+               ProjectDTO = new ProjectDTO { Id = timesheet.Project.Id.ToString(), ProjectName = timesheet.Project.ProjectName, Description = timesheet.Project.Description, Archive = timesheet.Project.Archive, Status = timesheet.Project.Status,
+               MemberDTO = new GetMemberDTO { Id = timesheet.Project.Member.Id.ToString(), Name = timesheet.Project.Member.Name, Username = timesheet.Project.Member.Username, Email = timesheet.Project.Member.Email, Status = timesheet.Project.Member.Status, Role = timesheet.Project.Member.Role, Hours = timesheet.Project.Member.Hours },
+               ClientDTO = new ClientDTO { Id = timesheet.Client.Id.ToString(), ClientName = timesheet.Client.ClientName, Adress = timesheet.Client.Adress, City = timesheet.Client.City, Country = timesheet.Client.Country, PostalCode = timesheet.Client.PostalCode },
+               },
            };
            
            return timeSheetDTO;
@@ -124,13 +129,13 @@ namespace Services
             throw;
         }
         }
-        public async Task UpdateAsync(Guid id, TimeSheetDTO timeSheetDTO,CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(Guid id, CreateTimeSheetDTO timeSheetDTO,CancellationToken cancellationToken = default)
         {
            try
            {
                 var client = timeSheetDTO.ClientId != null ? (await _repositoryManager.ClientRepository.GetByIdAsync(Guid.Parse(timeSheetDTO.ClientId), cancellationToken)) : null;
                 var project = timeSheetDTO.ProjectId != null ? (await _repositoryManager.ProjectRepository.GetProjectById(Guid.Parse(timeSheetDTO.ProjectId), cancellationToken)) : null;
-                var category = timeSheetDTO.CategoryId != null ? (await _repositoryManager.CategoryRepository.GetCategoryById(Guid.Parse(timeSheetDTO.CategoryId), cancellationToken)) : null;
+                var category = timeSheetDTO.CategoryId!= null ? (await _repositoryManager.CategoryRepository.GetCategoryById(Guid.Parse(timeSheetDTO.CategoryId), cancellationToken)) : null;
                 var result = (await _repositoryManager.TimeSheetRepository.GetTimeSheetById(id))
                     .UpdateDescription(timeSheetDTO.Description)
                     .UpdateOvertime(timeSheetDTO.OverTime)
