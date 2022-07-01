@@ -22,15 +22,34 @@ internal sealed class MemberRepository : IMemberRepository
     {
         _dbContext = dbContext;
     }
-    public  string Generate()
+    public async Task UpdatePasswordAsync(Member member)
+    {
+       var memberforChange = await _dbContext.Members.FirstOrDefaultAsync(x => x.Email == member.Email);
+        memberforChange.Password = member.Password;
+    }
+    public async Task<Member> GetMemberByEmail(string email)
+    {
+        var member = await _dbContext.Members.FirstOrDefaultAsync(x => x.Email == email);
+        if(member == null)
+        {
+            throw new NotFoundException("Member not found");
+        }
+        return new Member(member.Id, member.Name, member.Username, member.Email, member.Hours, member.Status, member.Role, member.Password);
+    }
+    public  string Generate(Member member)
     {
         var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
         var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
         var tokeOptions = new JwtSecurityToken(
             issuer: "https://localhost:44381/",
             audience: "https://localhost:44381/",
-            claims: new List<Claim>(),
-            expires: DateTime.Now.AddMinutes(5),
+            claims: new[] 
+            {
+            new Claim(ClaimTypes.NameIdentifier,member.Username),
+            new Claim(ClaimTypes.Name,member.Name),
+            new Claim(ClaimTypes.Role,member.Role)
+            },
+            expires: DateTime.Now.AddMinutes(30),
             signingCredentials: signinCredentials
 
         );

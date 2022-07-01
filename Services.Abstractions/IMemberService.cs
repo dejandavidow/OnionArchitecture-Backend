@@ -1,6 +1,7 @@
 
 using Contracts.Auth;
 using Contracts.DTOs;
+using Contracts.ResetPassword;
 using Domain.Pagination;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,8 @@ namespace Services.Abstractions
 {
 public interface IMemberService
     {
+        Task UpdatePassword(ResetPasswordModel model,CancellationToken cancellationToken);
+        Task<GetMemberDTO> GetMemberByEmail(string email);
         Task<AuthResponse> Authenticate(string username,string password);
         Task<int> SearchCountAsync(string search);
         Task<int> FilterCountAsync(string letter);

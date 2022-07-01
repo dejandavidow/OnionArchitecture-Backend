@@ -86,18 +86,18 @@ namespace Services
 
         public async Task<IEnumerable<CalendarTsDTO>> GetAllAsync(FetchParams fetchParams,CancellationToken cancellationToken = default)
         {
-           return (await _repositoryManager.TimeSheetRepository.GetTimeSheetAsync(fetchParams,cancellationToken)).Select(timesheet => new CalendarTsDTO()
-           {
-               Id = timesheet.Id.ToString(),
-               Description = timesheet.Description,
-               Time = timesheet.Time,
-               OverTime = timesheet.OverTime,
-               Date = timesheet.Date,
-               ClientId = timesheet.Client.Id.ToString(),
-               ProjectId = timesheet.Project.Id.ToString(),
-               CategoryId = timesheet.Category.Id.ToString(),
-           }
-           );
+            return (await _repositoryManager.TimeSheetRepository.GetTimeSheetAsync(fetchParams, cancellationToken)).Select(timesheet => new CalendarTsDTO()
+            {
+                Id = timesheet.Id.ToString(),
+                Description = timesheet.Description,
+                Time = timesheet.Time,
+                OverTime = timesheet.OverTime,
+                Date = timesheet.Date,
+                ClientId = timesheet.Client.Id.ToString(),
+                ProjectId = timesheet.Project.Id.ToString(),
+                CategoryId = timesheet.Category.Id.ToString(),
+            }
+            ) ;
         }
 
         public async Task<TimeSheetDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)

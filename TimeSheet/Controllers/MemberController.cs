@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Contracts.Auth;
 using Contracts.DTOs;
+using Contracts.ResetPassword;
 using Domain.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,14 +17,27 @@ public class MemberController : ControllerBase
     private readonly IServiceManager _serviceManager;
     public MemberController(IServiceManager serviceManager)
     {
-        _serviceManager=serviceManager;
+        _serviceManager = serviceManager;
     }
-    [AllowAnonymous]
+    [Authorize(Roles ="admin")]
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ResetPasswordModel model,CancellationToken cancellationToken)
+    {
+        await _serviceManager.MemberService.UpdatePassword(model,cancellationToken);
+        return Ok();
+    }
+    [AllowAnonymous] 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] AuthModel user)
     {
-        var token = await _serviceManager.MemberService.Authenticate(user.Username,user.Password);
+        var token = await _serviceManager.MemberService.Authenticate(user.Username, user.Password);
         return Ok(token);
+    }
+    [HttpGet("email/{email}")]
+    public async Task<IActionResult> GetbyEmail(string email)
+    {
+        var member = await _serviceManager.MemberService.GetMemberByEmail(email);
+        return Ok(member);
     }
     [HttpGet("search-count")]
     public async Task<IActionResult> CountSearchMembers([FromQuery] string search)
@@ -44,9 +58,9 @@ public class MemberController : ControllerBase
         return Ok(members);
     }
     [HttpGet("search")]
-    public async Task<IActionResult> SearchMembers([FromQuery] MemberParams memberParams,string search)
+    public async Task<IActionResult> SearchMembers([FromQuery] MemberParams memberParams, string search)
     {
-        var members = await _serviceManager.MemberService.SearchAsync(memberParams,search);
+        var members = await _serviceManager.MemberService.SearchAsync(memberParams, search);
         return Ok(members);
     }
     [HttpGet]

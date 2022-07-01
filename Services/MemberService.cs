@@ -2,6 +2,7 @@
 using Contracts.Auth;
 using Contracts.DTOs;
 using Contracts.Exceptions;
+using Contracts.ResetPassword;
 using Domain.Entities;
 using Domain.Pagination;
 using Domain.Repositories;
@@ -21,6 +22,43 @@ namespace Services
         {
             _repositoryManager = repositoryManager;
         }
+        public async Task UpdatePassword(ResetPasswordModel model,CancellationToken cancellationToken)
+        {
+            try
+            {
+                var member = (await _repositoryManager.MemberRepository.GetMemberByEmail(model.Email))
+                    .UpdatePassword(model.Password);
+                await _repositoryManager.MemberRepository.UpdatePasswordAsync(member);
+                await _repositoryManager.SaveChangesAsync(cancellationToken);
+
+            }
+            catch (NotFoundException)
+            {
+                throw;
+            }
+        }
+        public async Task<GetMemberDTO> GetMemberByEmail(string email)
+        {
+            try
+            {
+                var member = await _repositoryManager.MemberRepository.GetMemberByEmail(email);
+                return new GetMemberDTO()
+                {
+                    Id = member.Id.ToString(),
+                    Name = member.Name,
+                    Username = member.Username,
+                    Email = member.Email,
+                    Hours = member.Hours,
+                    Status = member.Status,
+                    Role = member.Role
+                };
+
+            }
+            catch (NotFoundException)
+            {
+                throw;
+            }
+        }
         public async Task<AuthResponse> Authenticate(string username,string password)
         {
             try
@@ -28,10 +66,9 @@ namespace Services
                 var member = await  _repositoryManager.MemberRepository.Authenticate(username, password);
                 return new AuthResponse
                 {
-                    Id = member.Id.ToString(),
                     Name = member.Name,
                     Role = member.Role,
-                    AccessToken = _repositoryManager.MemberRepository.Generate()
+                    AccessToken = _repositoryManager.MemberRepository.Generate(member)
                 };
             }
             catch(AuthException)

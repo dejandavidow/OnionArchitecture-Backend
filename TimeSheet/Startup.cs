@@ -28,8 +28,10 @@ namespace TimeSheet
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
-                    services.AddAuthentication(opt => {
+        { 
+            
+            services.AddCors();
+                services.AddAuthentication(opt => {
                         opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                         opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                     })
@@ -108,17 +110,6 @@ namespace TimeSheet
 
                 c.AddSecurityRequirement(securityRequirement);
             });
-       
-            services.AddCors(options =>
-{
-            options.AddPolicy(name: "AllowOrigin",
-                builder =>
-                {
-                    builder.WithOrigins("*")
-                                        .AllowAnyHeader()
-                                        .AllowAnyMethod();
-                });
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -132,15 +123,17 @@ namespace TimeSheet
                     c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TimeSheet v1")
                     );
             }
-             app.ConfigureExceptionHandler();
-
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseCors("AllowOrigin");
-
+                app.ConfigureExceptionHandler();
+                app.UseHttpsRedirection();
+                app.UseRouting();
+                app.UseCors(options => options
+                .WithOrigins(new[] {"http://localhost:3000"})
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+                );
+                app.UseAuthentication();
+                app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
