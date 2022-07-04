@@ -14,6 +14,7 @@ using Persistence;
 using System.Text;
 using TimeSheet.Extensions;
 using Services;
+using Contracts;
 
 namespace TimeSheet
 {
@@ -28,8 +29,9 @@ namespace TimeSheet
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        { 
-            
+        {
+
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
             services.AddCors();
                 services.AddAuthentication(opt => {
                         opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -53,7 +55,7 @@ namespace TimeSheet
             services.AddDbContext<RepositoryDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IServiceManager, ServiceManager>();
             services.AddScoped<IRepositoryManager, RepositoryManager>();
-            
+            services.AddTransient<IEmailService, EmailService>();
             services.AddControllers();
             /*services.AddSwaggerGen(c =>
             {

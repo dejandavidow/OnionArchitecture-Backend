@@ -11,7 +11,7 @@ namespace Domain.Pagination
         const int maxPageSize = 50;
         //public string letter { get; set; }
         public int PageNumber { get; set; } = 1;
-        private int _pageSize = 10;
+        private int _pageSize = 100;
         public int PageSize
         {
             get

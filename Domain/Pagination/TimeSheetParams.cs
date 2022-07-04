@@ -13,6 +13,7 @@ namespace Domain.Pagination
         public string ClientId { get; set; }
         public string ProjectId { get; set; }
         public string CategoryId { get; set; }
+        public string MemberId { get; set; }
         const int maxPageSize = 50;
         public int PageNumber { get; set; } = 1;
         private int _pageSize = 5;

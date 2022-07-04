@@ -63,7 +63,7 @@ internal sealed class MemberRepository : IMemberRepository
         {
             return new Member(member.Id, member.Name, member.Username, member.Email, member.Hours, member.Status, member.Role, member.Password);
         }
-        throw new AuthException("Wrong password or username");
+        throw new AuthException("Wrong username or password!");
     }
     public async Task<int> SearchCountAsync(string search)
     {

@@ -42,7 +42,6 @@ public class CategoryController : ControllerBase
         var categories = await _serviceManager.CategoryService.SearchAsync(categoryParams,search);
         return Ok(categories);
     }
-
     [HttpGet]
     public async Task<IActionResult> GetCategories([FromQuery] CategoryParams categoryParams,CancellationToken cancellationToken)
     {
