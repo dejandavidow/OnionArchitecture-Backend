@@ -94,13 +94,20 @@ namespace Services
 
         public async Task<CategoryDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var categorydomain = await _repositoryManager.CategoryRepository.GetCategoryById(id,cancellationToken);
-            var categorydto = new CategoryDTO()
+            try
             {
-                Id = categorydomain.Id.ToString(),
-                Name = categorydomain.Name
-            };
-            return categorydto;
+                var categorydomain = await _repositoryManager.CategoryRepository.GetCategoryById(id, cancellationToken);
+                var categorydto = new CategoryDTO()
+                {
+                    Id = categorydomain.Id.ToString(),
+                    Name = categorydomain.Name
+                };
+                return categorydto;
+            }
+            catch(NotFoundException)
+            {
+                throw;
+            }
         }
 
         public async Task UpdateAsync(Guid id,CategoryDTO categoryDTO, CancellationToken cancellationToken = default)

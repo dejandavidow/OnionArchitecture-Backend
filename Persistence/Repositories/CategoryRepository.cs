@@ -52,7 +52,7 @@ namespace Persistence.Repositories
         public async Task<Category> GetCategoryById(Guid id, CancellationToken cancellationToken = default)
         {
             var domaincategory = await _dbContext.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-            if (domaincategory == null)
+           if (domaincategory == null)
             {
                 throw new NotFoundException("Category not found");
             }
