@@ -59,7 +59,7 @@ public class TimeSheetController : ControllerBase
     }
     [Authorize]
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateSheet(Guid id,[FromBody] CreateTimeSheetDTO timeSheetDTO,CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateSheet(Guid id,[FromBody] CalendarTsDTO timeSheetDTO,CancellationToken cancellationToken)
     {
         await _serviceManager.TimeSheetService.UpdateAsync(id,timeSheetDTO,cancellationToken);
         return NoContent();

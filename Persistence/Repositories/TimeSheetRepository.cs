@@ -418,7 +418,7 @@ internal sealed class TimeSheetRepository : ITimeSheetRepository
     }
     public async Task UpdateTimeSheet(TimeSheet timesheet,CancellationToken cancellationToken = default)
     {
-        var persTS = await _dbContext.TimeSheets.AsNoTracking().FirstOrDefaultAsync(x => x.Id == timesheet.Id);
+        var persTS = await _dbContext.TimeSheets.FirstOrDefaultAsync(x => x.Id == timesheet.Id);
         persTS.Id = timesheet.Id;
         persTS.Description = timesheet.Description;
         persTS.Time = timesheet.Time;

@@ -22,5 +22,6 @@ namespace Persistence.Models
         public string Status { get; set; } = "inactive";
         public string Role { get; set; } = "worker";
         public string Password { get; set; }
+        public string ResetToken { get; set; } = null;
     }
 }

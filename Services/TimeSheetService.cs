@@ -129,7 +129,7 @@ namespace Services
             throw;
         }
         }
-        public async Task UpdateAsync(Guid id, CreateTimeSheetDTO timeSheetDTO,CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(Guid id, CalendarTsDTO timeSheetDTO,CancellationToken cancellationToken = default)
         {
            try
            {

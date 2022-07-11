@@ -1,4 +1,5 @@
 
+using Contracts;
 using Contracts.Auth;
 using Contracts.DTOs;
 using Contracts.Exceptions;
@@ -6,10 +7,12 @@ using Contracts.ResetPassword;
 using Domain.Entities;
 using Domain.Pagination;
 using Domain.Repositories;
+using Domain.Services;
 using Services.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 namespace Services
@@ -17,10 +20,34 @@ namespace Services
     internal sealed class MemberService : IMemberService
     {
         private readonly IRepositoryManager _repositoryManager;
-      
-        public MemberService(IRepositoryManager repositoryManager)
+        private readonly IMailService _mailService;
+
+        public MemberService(IRepositoryManager repositoryManager,IMailService mailService)
         {
             _repositoryManager = repositoryManager;
+            _mailService = mailService;
+        }
+        public async Task ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest,CancellationToken cancellationToken)
+        {
+            var user = await _repositoryManager.MemberRepository.GetMemberWithToken(resetPasswordRequest.Token);
+            await _repositoryManager.MemberRepository.UpdatePasswordsAsync(resetPasswordRequest.Token, resetPasswordRequest.Password);
+            await _repositoryManager.SaveChangesAsync(cancellationToken);
+        }
+        private string randomTokenString()
+        {
+            using var rngCryptoServiceProvider = new RNGCryptoServiceProvider();
+            var randomBytes = new byte[40];
+            rngCryptoServiceProvider.GetBytes(randomBytes);
+            // convert random bytes to hex string
+            return BitConverter.ToString(randomBytes).Replace("-", "");
+        }
+        public async Task ForgotPasswordAsync(ForgotPassword forgotPassword,CancellationToken cancellationToken)
+        {
+            var user = await _repositoryManager.MemberRepository.GetMemberByEmail(forgotPassword.Email);
+            var token = randomTokenString();
+            await _repositoryManager.MemberRepository.UpdateWithToken(user,token);
+            await _repositoryManager.SaveChangesAsync(cancellationToken);
+            await _mailService.SendEmailAsync(user.Email, "Password reset","Reset token:"+ " " + token);    
         }
         public async Task UpdatePassword(ResetPasswordModel model,CancellationToken cancellationToken)
         {
@@ -216,5 +243,6 @@ namespace Services
                 throw;
             }
         }
+
     }
 }

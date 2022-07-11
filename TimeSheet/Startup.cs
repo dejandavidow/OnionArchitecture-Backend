@@ -15,6 +15,8 @@ using System.Text;
 using TimeSheet.Extensions;
 using Services;
 using Contracts;
+using Domain.Services;
+using Persistence.Services;
 
 namespace TimeSheet
 {
@@ -31,7 +33,7 @@ namespace TimeSheet
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+            services.Configure<MailSettings>(Configuration.GetSection("EmailConfiguration"));
             services.AddCors();
                 services.AddAuthentication(opt => {
                         opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -55,7 +57,7 @@ namespace TimeSheet
             services.AddDbContext<RepositoryDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IServiceManager, ServiceManager>();
             services.AddScoped<IRepositoryManager, RepositoryManager>();
-            services.AddTransient<IEmailService, EmailService>();
+            services.AddScoped<IMailService, MailService>();
             services.AddControllers();
             /*services.AddSwaggerGen(c =>
             {

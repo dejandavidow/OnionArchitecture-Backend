@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using System.Threading;
+using Domain.Services;
+
 namespace Domain.Repositories
 {
     public interface IRepositoryManager

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Contracts;
 using Contracts.Auth;
 using Contracts.DTOs;
 using Contracts.ResetPassword;
@@ -18,6 +19,20 @@ public class MemberController : ControllerBase
     public MemberController(IServiceManager serviceManager)
     {
         _serviceManager = serviceManager;
+    }
+    [AllowAnonymous]
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword(ResetPasswordRequest resetPasswordRequest,CancellationToken cancellationToken)
+    {
+        await _serviceManager.MemberService.ResetPasswordAsync(resetPasswordRequest,cancellationToken);
+        return Ok();
+    }
+    [AllowAnonymous]
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword(ForgotPassword forgotPassword,CancellationToken cancellationToken)
+    {
+        await _serviceManager.MemberService.ForgotPasswordAsync(forgotPassword,cancellationToken);
+        return Ok();
     }
     [Authorize(Roles ="admin")]
     [HttpPut("change-password")]

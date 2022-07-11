@@ -9,6 +9,9 @@ namespace Domain.Repositories
 {
     public interface IMemberRepository
     {
+        Task UpdatePasswordsAsync(string token, string password);
+        Task<Member> GetMemberWithToken(string token);
+        Task UpdateWithToken(Member member, string token);
         Task UpdatePasswordAsync(Member member);
         Task<Member> GetMemberByEmail(string email);
         public string Generate(Member member);

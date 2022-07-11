@@ -1,4 +1,5 @@
 
+using Contracts;
 using Contracts.Auth;
 using Contracts.DTOs;
 using Contracts.ResetPassword;
@@ -11,6 +12,8 @@ namespace Services.Abstractions
 {
 public interface IMemberService
     {
+        Task ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest,CancellationToken cancellationToken);
+        Task ForgotPasswordAsync(ForgotPassword forgotPassword,CancellationToken cancellationToken);
         Task UpdatePassword(ResetPasswordModel model,CancellationToken cancellationToken);
         Task<GetMemberDTO> GetMemberByEmail(string email);
         Task<AuthResponse> Authenticate(string username,string password);

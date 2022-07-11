@@ -22,6 +22,26 @@ internal sealed class MemberRepository : IMemberRepository
     {
         _dbContext = dbContext;
     }
+    public async Task UpdatePasswordsAsync(string token,string password)
+    {
+        var memberup = await _dbContext.Members.FirstOrDefaultAsync(x => x.ResetToken == token);
+        memberup.Password = password;
+        memberup.ResetToken = null;
+    }
+    public async Task<Member> GetMemberWithToken(string token)
+    {
+        var tokenmember = await _dbContext.Members.FirstOrDefaultAsync(x => x.ResetToken == token);
+        if(tokenmember == null)
+        {
+            throw new NotFoundException("Invalid token");
+        }
+        return new Member(tokenmember.Id, tokenmember.Name, tokenmember.Username, tokenmember.Email, tokenmember.Hours, tokenmember.Status, tokenmember.Role, tokenmember.Password);
+    }
+    public async Task UpdateWithToken(Member member,string token)
+    {
+        var membertoken = await _dbContext.Members.FirstOrDefaultAsync(x => x.Id == member.Id);
+        membertoken.ResetToken = token;
+    }
     public async Task UpdatePasswordAsync(Member member)
     {
        var memberforChange = await _dbContext.Members.FirstOrDefaultAsync(x => x.Email == member.Email);
@@ -32,11 +52,11 @@ internal sealed class MemberRepository : IMemberRepository
         var member = await _dbContext.Members.FirstOrDefaultAsync(x => x.Email == email);
         if(member == null)
         {
-            throw new NotFoundException("Member not found");
+            throw new NotFoundException("Wrong email");
         }
         return new Member(member.Id, member.Name, member.Username, member.Email, member.Hours, member.Status, member.Role, member.Password);
     }
-    public  string Generate(Member member)
+    public string Generate(Member member)
     {
         var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
         var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);

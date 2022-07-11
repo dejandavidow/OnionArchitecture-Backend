@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Domain.Repositories;
 using Persistence.Repositories;
+using Domain.Services;
 
 public sealed class RepositoryManager : IRepositoryManager
 {
