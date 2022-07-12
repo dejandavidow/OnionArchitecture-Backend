@@ -52,7 +52,7 @@ internal sealed class MemberRepository : IMemberRepository
         var member = await _dbContext.Members.FirstOrDefaultAsync(x => x.Email == email);
         if(member == null)
         {
-            throw new NotFoundException("Wrong email");
+            throw new NotFoundException("Bad email adress.");
         }
         return new Member(member.Id, member.Name, member.Username, member.Email, member.Hours, member.Status, member.Role, member.Password);
     }

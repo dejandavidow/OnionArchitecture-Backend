@@ -9,15 +9,15 @@ namespace Contracts
 {
     public class ResetPasswordRequest
     {
-        [Required]
+        [Required(ErrorMessage ="Token is required.")]
         public string Token { get; set; }
 
-        [Required]
-        [MinLength(8)]
+        [Required(ErrorMessage ="Password is required")]
+        [MinLength(8,ErrorMessage ="Password must have atleast 8 characters.")]
         public string Password { get; set; }
 
-        [Required]
-        [Compare("Password")]
+        [Required(ErrorMessage ="Confirm password is required.")]
+        [Compare("Password",ErrorMessage ="Passwords don't match.")]
         public string ConfirmPassword { get; set; }
     }
 }
