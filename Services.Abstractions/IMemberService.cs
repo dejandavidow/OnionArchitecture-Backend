@@ -1,6 +1,7 @@
 
 using Contracts;
 using Contracts.Auth;
+using Contracts.ChangePassword;
 using Contracts.DTOs;
 using Contracts.ResetPassword;
 using Domain.Pagination;
@@ -12,6 +13,7 @@ namespace Services.Abstractions
 {
 public interface IMemberService
     {
+        Task LoggedChangePassword(ChangePasswordRequest changePasswordRequest, CancellationToken cancellationToken);
         Task ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest,CancellationToken cancellationToken);
         Task ForgotPasswordAsync(ForgotPassword forgotPassword,CancellationToken cancellationToken);
         Task UpdatePassword(ResetPasswordModel model,CancellationToken cancellationToken);

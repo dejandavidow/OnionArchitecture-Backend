@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Contracts;
 using Contracts.Auth;
+using Contracts.ChangePassword;
 using Contracts.DTOs;
 using Contracts.ResetPassword;
 using Domain.Pagination;
@@ -19,6 +20,13 @@ public class MemberController : ControllerBase
     public MemberController(IServiceManager serviceManager)
     {
         _serviceManager = serviceManager;
+    }
+    [Authorize]
+    [HttpPut("member/change-password")]
+    public async Task<IActionResult> UserChangePassword(ChangePasswordRequest changePasswordRequest, CancellationToken cancellationToken) 
+    {
+       await _serviceManager.MemberService.LoggedChangePassword(changePasswordRequest,cancellationToken);
+        return Ok();
     }
     [AllowAnonymous]
     [HttpPost("reset-password")]

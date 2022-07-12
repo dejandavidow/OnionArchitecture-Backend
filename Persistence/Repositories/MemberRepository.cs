@@ -22,6 +22,15 @@ internal sealed class MemberRepository : IMemberRepository
     {
         _dbContext = dbContext;
     }
+    public async Task<Member> GetMemberWithIdAndCheckPassword(string id, string password)
+    {
+        var memberPW = await  _dbContext.Members.FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+        if(memberPW.Password != password)
+        {
+            throw new NotFoundException("Old password is wrong");
+        }
+        return new Member(memberPW.Id, memberPW.Name, memberPW.Username, memberPW.Email, memberPW.Hours, memberPW.Status, memberPW.Role, memberPW.Password);
+    }
     public async Task UpdatePasswordsAsync(string token,string password)
     {
         var memberup = await _dbContext.Members.FirstOrDefaultAsync(x => x.ResetToken == token);

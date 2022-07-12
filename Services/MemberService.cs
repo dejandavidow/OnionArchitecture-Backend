@@ -1,6 +1,7 @@
 
 using Contracts;
 using Contracts.Auth;
+using Contracts.ChangePassword;
 using Contracts.DTOs;
 using Contracts.Exceptions;
 using Contracts.ResetPassword;
@@ -26,6 +27,12 @@ namespace Services
         {
             _repositoryManager = repositoryManager;
             _mailService = mailService;
+        }
+        public async Task LoggedChangePassword(ChangePasswordRequest changePasswordRequest, CancellationToken cancellationToken)
+        {
+            var memberPW = (await _repositoryManager.MemberRepository.GetMemberWithIdAndCheckPassword(changePasswordRequest.Id, changePasswordRequest.OldPassword)).UpdatePassword(changePasswordRequest.NewPassword);
+            await _repositoryManager.MemberRepository.UpdatePasswordAsync(memberPW);
+            await _repositoryManager.SaveChangesAsync(cancellationToken);
         }
         public async Task ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest,CancellationToken cancellationToken)
         {
@@ -93,6 +100,7 @@ namespace Services
                 var member = await  _repositoryManager.MemberRepository.Authenticate(username, password);
                 return new AuthResponse
                 {
+                    Id = member.Id.ToString(),
                     Name = member.Name,
                     Role = member.Role,
                     AccessToken = _repositoryManager.MemberRepository.Generate(member)
