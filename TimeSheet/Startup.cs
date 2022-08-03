@@ -59,35 +59,6 @@ namespace TimeSheet
             services.AddScoped<IRepositoryManager, RepositoryManager>();
             services.AddScoped<IMailService, MailService>();
             services.AddControllers();
-            /*services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "BasicAuth", Version = "v1" });
-                c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "basic",
-                    In = ParameterLocation.Header,
-                    Description = "Basic Authorization header using the Bearer scheme."
-                });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                          new OpenApiSecurityScheme
-                            {
-                                Reference = new OpenApiReference
-                                {
-                                    Type = ReferenceType.SecurityScheme,
-                                    Id = "basic"
-                                }
-                            },
-                            new string[] {}
-                    }
-                });
-            });*/
-
-            /*services.AddAuthentication("BasicAuthentication")
-    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);*/
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TimeSheet", Version = "v1" });

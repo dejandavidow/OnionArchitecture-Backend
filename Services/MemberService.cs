@@ -45,7 +45,6 @@ namespace Services
             using var rngCryptoServiceProvider = new RNGCryptoServiceProvider();
             var randomBytes = new byte[40];
             rngCryptoServiceProvider.GetBytes(randomBytes);
-            // convert random bytes to hex string
             return BitConverter.ToString(randomBytes).Replace("-", "");
         }
         public async Task ForgotPasswordAsync(ForgotPassword forgotPassword,CancellationToken cancellationToken)
@@ -54,7 +53,7 @@ namespace Services
             var token = randomTokenString();
             await _repositoryManager.MemberRepository.UpdateWithToken(user,token);
             await _repositoryManager.SaveChangesAsync(cancellationToken);
-            await _mailService.SendEmailAsync(user.Email, "Password reset","Reset token:"+ " " + token);    
+            await _mailService.SendEmailAsync(user.Email, "Password reset", "Reset token:" + " " + token);   
         }
         public async Task UpdatePassword(ResetPasswordModel model,CancellationToken cancellationToken)
         {
