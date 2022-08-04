@@ -42,7 +42,7 @@ internal sealed class MemberRepository : IMemberRepository
         var tokenmember = await _dbContext.Members.FirstOrDefaultAsync(x => x.ResetToken == token);
         if(tokenmember == null)
         {
-            throw new NotFoundException("Invalid token");
+            throw new NotFoundException("Bad token");
         }
         return new Member(tokenmember.Id, tokenmember.Name, tokenmember.Username, tokenmember.Email, tokenmember.Hours, tokenmember.Status, tokenmember.Role, tokenmember.Password);
     }

@@ -14,7 +14,7 @@ namespace Services.Abstractions
 public interface IMemberService
     {
         Task LoggedChangePassword(ChangePasswordRequest changePasswordRequest, CancellationToken cancellationToken);
-        Task ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest,CancellationToken cancellationToken);
+        Task ResetPasswordAsync(string token,ResetPasswordRequest resetPasswordRequest,CancellationToken cancellationToken);
         Task ForgotPasswordAsync(ForgotPassword forgotPassword,CancellationToken cancellationToken);
         Task UpdatePassword(ResetPasswordModel model,CancellationToken cancellationToken);
         Task<GetMemberDTO> GetMemberByEmail(string email);

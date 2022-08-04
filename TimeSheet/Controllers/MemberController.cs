@@ -30,10 +30,10 @@ public class MemberController : ControllerBase
     }
     [AllowAnonymous]
     [HttpPost("reset-password")]
-    public async Task<IActionResult> ResetPassword(ResetPasswordRequest resetPasswordRequest,CancellationToken cancellationToken)
+    public async Task<IActionResult> ResetPassword([FromQuery] string token,ResetPasswordRequest resetPasswordRequest,CancellationToken cancellationToken)
     {
-        await _serviceManager.MemberService.ResetPasswordAsync(resetPasswordRequest,cancellationToken);
-        return Ok();
+        await _serviceManager.MemberService.ResetPasswordAsync(token,resetPasswordRequest,cancellationToken);
+        return Ok("Hello");
     }
     [AllowAnonymous]
     [HttpPost("forgot-password")]

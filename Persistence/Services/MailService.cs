@@ -24,7 +24,7 @@ namespace Persistence.Services
             builder.HtmlBody = body;
             email.Body = builder.ToMessageBody();
             using var smtp = new SmtpClient();
-            smtp.Connect(_mailSettings.SmtpServer, _mailSettings.Port, true);
+            smtp.Connect(_mailSettings.SmtpServer, _mailSettings.Port,true);
             smtp.Authenticate(_mailSettings.UserName, _mailSettings.Password);
             await smtp.SendAsync(email);
             smtp.Disconnect(true);

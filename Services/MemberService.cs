@@ -34,10 +34,14 @@ namespace Services
             await _repositoryManager.MemberRepository.UpdatePasswordAsync(memberPW);
             await _repositoryManager.SaveChangesAsync(cancellationToken);
         }
-        public async Task ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest,CancellationToken cancellationToken)
+        public async Task ResetPasswordAsync(string token,ResetPasswordRequest resetPasswordRequest,CancellationToken cancellationToken)
         {
-            var user = await _repositoryManager.MemberRepository.GetMemberWithToken(resetPasswordRequest.Token);
-            await _repositoryManager.MemberRepository.UpdatePasswordsAsync(resetPasswordRequest.Token, resetPasswordRequest.Password);
+            if(token == "" || token == null)
+            {
+                throw new NotFoundException("Invalid token");
+            }
+            await _repositoryManager.MemberRepository.GetMemberWithToken(token);
+            await _repositoryManager.MemberRepository.UpdatePasswordsAsync(token, resetPasswordRequest.Password);
             await _repositoryManager.SaveChangesAsync(cancellationToken);
         }
         private string randomTokenString()
@@ -53,7 +57,8 @@ namespace Services
             var token = randomTokenString();
             await _repositoryManager.MemberRepository.UpdateWithToken(user,token);
             await _repositoryManager.SaveChangesAsync(cancellationToken);
-            await _mailService.SendEmailAsync(user.Email, "Password reset", "Reset token:" + " " + token);   
+            var url = "http://localhost:3000/reset-password?token=" + token;
+            await _mailService.SendEmailAsync(user.Email, $"Password reset","<p>Reset link</p>" + $"<a href='{url}'>Click here</a>");   
         }
         public async Task UpdatePassword(ResetPasswordModel model,CancellationToken cancellationToken)
         {
