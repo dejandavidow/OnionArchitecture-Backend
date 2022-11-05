@@ -9,7 +9,7 @@ using Services.Abstractions;
 
 [Authorize]
 [ApiController]
-[Route("api/Category")]
+[Route("api/Categories")]
 public class CategoryController : ControllerBase
 {
     private readonly IServiceManager _serviceManager;
@@ -23,14 +23,14 @@ public class CategoryController : ControllerBase
         var categories = await _serviceManager.CategoryService.searchCountAsync(search);
         return Ok(categories);
     }
-    [HttpGet("count")]
+    [HttpGet("filter-count")]
     public async Task<IActionResult> FilterCountCategories([FromQuery] string letter)
     {
         var categories = await _serviceManager.CategoryService.FilterCountAsync(letter);
         return Ok(categories);
     }
 
-    [HttpGet("filter")]
+    [HttpGet("filters")]
     public async Task<IActionResult> FilterCategories([FromQuery] CategoryParams categoryParams, string letter)
     {
         var categories = await _serviceManager.CategoryService.FilterAsync(categoryParams,letter);

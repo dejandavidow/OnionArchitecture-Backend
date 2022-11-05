@@ -102,7 +102,7 @@ namespace TimeSheet
                 app.UseHttpsRedirection();
                 app.UseRouting();
                 app.UseCors(options => options
-                .WithOrigins(new[] {"http://localhost:3000"})
+                .WithOrigins(new[] { "http://localhost:3000", "http://localhost:4200" })
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials()

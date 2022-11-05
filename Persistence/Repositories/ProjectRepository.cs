@@ -89,7 +89,6 @@ internal sealed class ProjectRepository : IProjectRepository
             new Member(project.Member.Id, project.Member.Name, project.Member.Username, project.Member.Email, project.Member.Hours, project.Member.Status, project.Member.Role,project.Member.Password)
         ));
     }
-
     public async Task<Project> GetProjectById(Guid id, CancellationToken cancellationToken = default)
     {
         var persistenceproject = await _dbContext.Projects.Include(p => p.Client).Include(p => p.Member).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id,cancellationToken);
@@ -102,7 +101,6 @@ internal sealed class ProjectRepository : IProjectRepository
             new Member(persistenceproject.Member.Id, persistenceproject.Member.Name, persistenceproject.Member.Username, persistenceproject.Member.Email, persistenceproject.Member.Hours, persistenceproject.Member.Status, persistenceproject.Member.Role,persistenceproject.Member.Password)
         );
     }
-
     public async Task InsertProject(Project project,CancellationToken cancellationToken)
     {
         var checkproject = await _dbContext.Projects.AsNoTracking().FirstOrDefaultAsync(x => x.Id == project.Id,cancellationToken);
@@ -121,15 +119,14 @@ internal sealed class ProjectRepository : IProjectRepository
             MemberId = project.Member.Id
         });
     }
-
     public void RemoveProject(Project project)
     {
-        _dbContext.Projects.Remove(new Persistence.Models.PersistenceProject(){
+         _dbContext.Projects.Remove(new Persistence.Models.PersistenceProject(){
             Id = project.Id,
             ProjectName = project.ProjectName,
             Description = project.Description,
             Archive = project.Archive,
-              Client = new Persistence.Models.PersistenceClient()
+            Client = new Persistence.Models.PersistenceClient()
             {
                 Id = project.Client.Id,
                 ClientName = project.Client.ClientName,
@@ -138,7 +135,7 @@ internal sealed class ProjectRepository : IProjectRepository
                 PostalCode = project.Client.PostalCode,
                 Country = project.Client.Country
             },
-            Member = new Persistence.Models.PersistenceMember() 
+            Member = new Persistence.Models.PersistenceMember()
             {
                 Id = project.Member.Id,
                 Name = project.Member.Name,
@@ -148,10 +145,9 @@ internal sealed class ProjectRepository : IProjectRepository
                 Status = project.Member.Status,
                 Role = project.Member.Role
             }
-            
-        });
+        }
+        );
     }
-
     public async Task UpdateProject(Project project,CancellationToken cancellationToken)
     {
       var persistenceProject = await _dbContext.Projects.FirstOrDefaultAsync(x => x.Id == project.Id,cancellationToken);

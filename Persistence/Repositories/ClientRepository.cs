@@ -28,10 +28,6 @@ internal sealed class ClientRepository : IClientRepository
     {
         if (!String.IsNullOrEmpty(search))
         {
-            // if(search.Length < 2)
-            // {
-            //     return await _dbContext.Clients.Where(x => x.ClientName.StartsWith(search)).CountAsync();
-            // }
             return await _dbContext.Clients.Where(x => x.ClientName.Contains(search)).CountAsync();
         }
         else

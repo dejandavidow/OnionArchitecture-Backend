@@ -13,7 +13,7 @@ using Services.Abstractions;
 
 [Authorize]
 [ApiController]
-[Route("api/Member")]
+[Route("api/Members")]
 public class MemberController : ControllerBase
 {
     private readonly IServiceManager _serviceManager;
@@ -21,7 +21,6 @@ public class MemberController : ControllerBase
     {
         _serviceManager = serviceManager;
     }
-    [Authorize]
     [HttpPut("member/change-password")]
     public async Task<IActionResult> UserChangePassword(ChangePasswordRequest changePasswordRequest, CancellationToken cancellationToken) 
     {
@@ -33,7 +32,7 @@ public class MemberController : ControllerBase
     public async Task<IActionResult> ResetPassword([FromQuery] string token,ResetPasswordRequest resetPasswordRequest,CancellationToken cancellationToken)
     {
         await _serviceManager.MemberService.ResetPasswordAsync(token,resetPasswordRequest,cancellationToken);
-        return Ok("Hello");
+        return Ok();
     }
     [AllowAnonymous]
     [HttpPost("forgot-password")]
@@ -74,7 +73,7 @@ public class MemberController : ControllerBase
         var members = await _serviceManager.MemberService.FilterCountAsync(letter);
         return Ok(members);
     }
-    [HttpGet("filter")]
+    [HttpGet("filters")]
     public async Task<IActionResult> FilterMembers([FromQuery] MemberParams memberParams, string letter)
     {
         var members = await _serviceManager.MemberService.FilterAsync(memberParams, letter);

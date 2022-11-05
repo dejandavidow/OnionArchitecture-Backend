@@ -57,7 +57,7 @@ namespace Services
             var token = randomTokenString();
             await _repositoryManager.MemberRepository.UpdateWithToken(user,token);
             await _repositoryManager.SaveChangesAsync(cancellationToken);
-            var url = "http://localhost:3000/reset-password?token=" + token;
+            var url = "http://localhost:4200/reset-password?token=" + token;
             await _mailService.SendEmailAsync(user.Email, $"Password reset","<p>Reset link</p>" + $"<a href='{url}'>Click here</a>");   
         }
         public async Task UpdatePassword(ResetPasswordModel model,CancellationToken cancellationToken)
@@ -234,7 +234,6 @@ namespace Services
         {
             try
             {
-                //var checkhours = memberDTO.Hours > 0 ? memberDTO.Hours : 0;
                 var memberforupdate = (await _repositoryManager.MemberRepository.GetMemberById(id, cancellationToken))
                 .UpdateName(memberDTO.Name)
                 .UpdateEmail(memberDTO.Email)

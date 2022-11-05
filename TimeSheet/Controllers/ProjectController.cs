@@ -6,11 +6,9 @@ using Domain.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
-
-
 [Authorize]
 [ApiController]
-[Route("api/Project")]
+[Route("api/Projects")]
 public class ProjectController : ControllerBase
 {
     private readonly IServiceManager _serviceManager;
@@ -36,7 +34,7 @@ public class ProjectController : ControllerBase
         var projects = await _serviceManager.ProjectService.FilterProjects(projectParams, search);
         return Ok(projects);
     }
-    [HttpGet("filter")]
+    [HttpGet("filters")]
     public async Task<IActionResult> FilterProjects([FromQuery] ProjectParams projectParams,string letter)
     {
         var projects = await _serviceManager.ProjectService.FilterProjects(projectParams,letter);

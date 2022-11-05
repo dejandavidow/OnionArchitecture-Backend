@@ -1,4 +1,3 @@
-
 using Contracts.DTOs;
 using Contracts.Exceptions;
 using Domain.Entities;
@@ -55,7 +54,6 @@ namespace Services
                 MemberDTO = new GetMemberDTO { Id = project.Member.Id.ToString(), Name = project.Member.Name, Username = project.Member.Username, Email = project.Member.Email, Status = project.Member.Status, Role = project.Member.Role, Hours = project.Member.Hours }
             });
         }
-    
         public async Task CreateAsync(PostProjectDTO projectDTO, CancellationToken cancellationToken = default)
         {
             try
@@ -75,12 +73,12 @@ namespace Services
                 throw;
             }
         }
-
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            try{
+            try
+            {
             var projectfordelete = await _repositoryManager.ProjectRepository.GetProjectById(id,cancellationToken);
-            _repositoryManager.ProjectRepository.RemoveProject(projectfordelete);
+             _repositoryManager.ProjectRepository.RemoveProject(projectfordelete);
             await _repositoryManager.SaveChangesAsync(cancellationToken);
             }
             catch(NotFoundException)
@@ -92,7 +90,6 @@ namespace Services
                 throw;
             }
         }
-
         public async Task<IEnumerable<ProjectDTO>> GetAllAsync(ProjectParams projectParams,CancellationToken cancellationToken = default)
         {
         return (await _repositoryManager.ProjectRepository.GetProjectAsync(projectParams,cancellationToken)).Select(project => new ProjectDTO(){
@@ -105,7 +102,6 @@ namespace Services
             MemberDTO = new GetMemberDTO { Id = project.Member.Id.ToString(), Name = project.Member.Name, Username = project.Member.Username ,Email = project.Member.Email, Status = project.Member.Status, Role = project.Member.Role, Hours = project.Member.Hours }
         });
         }
-
         public async Task<ProjectDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             try

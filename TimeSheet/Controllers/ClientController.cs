@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 [Authorize]
 [ApiController]
-[Route("api/Client")]
+[Route("api/Clients")]
 public class ClientController : ControllerBase
 {
     private readonly IServiceManager _serviceManager;
@@ -16,21 +16,21 @@ public class ClientController : ControllerBase
     {
         _serviceManager = serviceManager;
     }
-    [HttpGet("filter/count")]
+    [HttpGet("filter-count")]
     public async Task<IActionResult> GetCountFilteredClients([FromQuery] string letter)
     {
       var clients = await _serviceManager.ClientService.GetFilterCount(letter);
       return Ok(clients);
     }
 
-    [HttpGet("filter")]
+    [HttpGet("filters")]
     public async Task<IActionResult> GetFilterClients([FromQuery] ClientParams clientParams)
     {
         var clients = await _serviceManager.ClientService.GetFilterAsync(clientParams);
         return Ok(clients);
     }
 
-    [HttpGet("count")]
+    [HttpGet("search-count")]
     public async Task<IActionResult> GetCountClients([FromQuery] string search)
     {
       var clients = await _serviceManager.ClientService.GetAllCount(search);
