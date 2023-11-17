@@ -1,6 +1,6 @@
-using Services.Abstractions;
+using Contracts;
 using Domain.Repositories;
-using Microsoft.AspNetCore.Authentication;
+using Domain.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,12 +11,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Persistence;
+using Persistence.Services;
+using Services;
+using Services.Abstractions;
 using System.Text;
 using TimeSheet.Extensions;
-using Services;
-using Contracts;
-using Domain.Services;
-using Persistence.Services;
 
 namespace TimeSheet
 {
@@ -35,23 +34,24 @@ namespace TimeSheet
 
             services.Configure<MailSettings>(Configuration.GetSection("EmailConfiguration"));
             services.AddCors();
-                services.AddAuthentication(opt => {
-                        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    })
-                    .AddJwtBearer(options =>
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateIssuer = true,
-                            ValidateAudience = true,
-                            ValidateLifetime = true,
-                            ValidateIssuerSigningKey = true,
-                            ValidIssuer = "https://localhost:44381/",
-                            ValidAudience = "https://localhost:44381/",
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"))
-                        };
-                    });
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = "https://localhost:44381/",
+                        ValidAudience = "https://localhost:44381/",
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"))
+                    };
+                });
 
 
             services.AddDbContext<RepositoryDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -98,17 +98,17 @@ namespace TimeSheet
                     c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TimeSheet v1")
                     );
             }
-                app.ConfigureExceptionHandler();
-                app.UseHttpsRedirection();
-                app.UseRouting();
-                app.UseCors(options => options
-                .WithOrigins(new[] { "http://localhost:3000", "http://localhost:4200" })
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
-                );
-                app.UseAuthentication();
-                app.UseAuthorization();
+            app.ConfigureExceptionHandler();
+            app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseCors(options => options
+            .WithOrigins(new[] { "http://localhost:3000", "http://localhost:4200" })
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+            );
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
