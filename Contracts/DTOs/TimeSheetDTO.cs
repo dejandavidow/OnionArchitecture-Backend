@@ -5,13 +5,24 @@ namespace Contracts.DTOs
 {
     public class TimeSheetDTO
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
+        [Required]
+        [MaxLength(50)]
         public string Description { get; set; }
+        [Required]
         public float Time { get; set; }
+        [Required]
+        public float Overtime { get; set; }
+        [Required]
+        public DateTime Date { get; set; }
+        [Required]
 
-        public float OverTime { get; set; }
-        public string Date { get; set; }
-        public CategoryDTO CategoryDTO { get; set; }
-        public ProjectDTO ProjectDTO { get; set; }
+        public int ClientId { get; set; }
+        [Required]
+
+        public int ProjectId { get; set; }
+        [Required]
+
+        public int CategoryId { get; set; }
     }
 }

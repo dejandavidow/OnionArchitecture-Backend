@@ -4,19 +4,21 @@ using Domain.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Persistence;
+using Persistence.Repositories;
 using Persistence.Services;
 using Services;
 using Services.Abstractions;
+using Services.MappingProfile;
 using System.Text;
 using TimeSheet.Extensions;
-
 namespace TimeSheet
 {
     public class Startup
@@ -31,7 +33,7 @@ namespace TimeSheet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddAutoMapper(typeof(ServiceProfiles));
             services.Configure<MailSettings>(Configuration.GetSection("EmailConfiguration"));
             services.AddCors();
             services.AddAuthentication(opt =>
@@ -52,39 +54,19 @@ namespace TimeSheet
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"))
                     };
                 });
-
-
             services.AddDbContext<RepositoryDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddScoped<IServiceManager, ServiceManager>();
-            services.AddScoped<IRepositoryManager, RepositoryManager>();
+            services.AddIdentity<User, IdentityRole>()
+            .AddEntityFrameworkStores<RepositoryDbContext>()
+            .AddDefaultTokenProviders();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IClientService, ClientService>();
+            services.AddScoped<IProjectService, ProjectService>();
+            services.TryAddScoped<ITimeSheetService, TimeSheetService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IMailService, MailService>();
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TimeSheet", Version = "v1" });
-                var securitySchema = new OpenApiSecurityScheme
-                {
-                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
-                };
+            services.AddSwaggerGen();
 
-                c.AddSecurityDefinition("Bearer", securitySchema);
-
-                var securityRequirement = new OpenApiSecurityRequirement
-                {
-                    { securitySchema, new[] { "Bearer" } }
-                };
-
-                c.AddSecurityRequirement(securityRequirement);
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
