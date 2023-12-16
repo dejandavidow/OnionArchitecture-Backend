@@ -1,10 +1,12 @@
 ﻿using Contracts.Pagination;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Services.Abstractions;
 
 namespace TimeSheet.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -18,6 +20,16 @@ namespace TimeSheet.Controllers
         public IActionResult Get([FromQuery] QueryParameters parameters)
         {
             var categories = _categoryService.GetAll(parameters);
+            var metadata = new
+            {
+                categories.TotalCount,
+                categories.PageSize,
+                categories.CurrentPage,
+                categories.TotalPages,
+                categories.HasNext,
+                categories.HasPrevious
+            };
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
             return Ok(categories);
         }
         [HttpGet("{id}")]

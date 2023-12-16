@@ -1,6 +1,8 @@
+using Domain.Entities;
+
 namespace Domain.Repositories
 {
-    public interface ITimeSheetRepository
+    public interface ITimeSheetRepository : IRepositoryBase<TimeSheet>
     {
     }
 }

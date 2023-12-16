@@ -10,6 +10,7 @@ namespace Services.MappingProfile
         {
             CreateMap<Client, ClientDTO>();
             CreateMap<Project, ProjectDTO>();
+            CreateMap<TimeSheet, TimeSheetDTO>();
         }
     }
 }

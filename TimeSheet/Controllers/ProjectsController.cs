@@ -5,6 +5,7 @@ using Services.Abstractions;
 
 namespace TimeSheet.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProjectsController : ControllerBase

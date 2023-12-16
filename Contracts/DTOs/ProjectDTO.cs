@@ -8,6 +8,5 @@ namespace Contracts.DTOs
         public bool Archive { get; set; }
         public bool Status { get; set; }
         public string ClientName { get; set; }
-        public string UserId { get; set; }
     }
 }
