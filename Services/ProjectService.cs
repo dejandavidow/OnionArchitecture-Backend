@@ -1,157 +1,73 @@
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Contracts.DTOs;
-using Contracts.Exceptions;
+using Contracts.Pagination;
 using Domain.Entities;
-using Domain.Pagination;
 using Domain.Repositories;
 using Services.Abstractions;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Services
 {
-    internal sealed class ProjectService : IProjectService
+    public sealed class ProjectService : IProjectService
     {
-        private readonly IRepositoryManager _repositoryManager;
-        public ProjectService(IRepositoryManager repositoryManager)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+        public ProjectService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _repositoryManager = repositoryManager;
-        }
-        public async Task<int> CountSearchProjects(string search)
-        {
-            return await  _repositoryManager.ProjectRepository.CountSearchProjects(search);
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<int> CountFilterProjects(string letter)
+        public void Create(Project project)
         {
-            return await _repositoryManager.ProjectRepository.CountFilterProjects(letter);
+            _unitOfWork.ProjectRepository.Create(project);
+            _unitOfWork.SaveChanges();
         }
-        public async Task<IEnumerable<ProjectDTO>> SearchProjects(ProjectParams projectParams, string search)
+
+        public void Delete(Project project)
         {
-            return (await _repositoryManager.ProjectRepository.FilterProjects(projectParams, search)).Select(project => new ProjectDTO()
-            {
-                Id = project.Id.ToString(),
-                ProjectName = project.ProjectName,
-                Description = project.Description,
-                Archive = project.Archive,
-                Status = project.Status,
-                ClientDTO = new ClientDTO { Id = project.Client.Id.ToString(), ClientName = project.Client.ClientName, Adress = project.Client.Adress, City = project.Client.City, Country = project.Client.Country, PostalCode = project.Client.PostalCode },
-                MemberDTO = new GetMemberDTO { Id = project.Member.Id.ToString(),Name = project.Member.Name,Username = project.Member.Username,Email = project.Member.Email,Status = project.Member.Status, Role = project.Member.Role,Hours = project.Member.Hours}
-            });
+            _unitOfWork.ProjectRepository?.Delete(project);
+            _unitOfWork.SaveChanges();
         }
-        public async Task<IEnumerable<ProjectDTO>> FilterProjects(ProjectParams projectParams, string letter)
+
+        public PaginatedList<ProjectDTO> GetAll(QueryParameters parameters)
         {
-            return (await _repositoryManager.ProjectRepository.FilterProjects(projectParams,letter)).Select(project => new ProjectDTO()
+            var projects = _unitOfWork.ProjectRepository.FindAll();
+            if (!string.IsNullOrEmpty(parameters.Search))
             {
-                Id = project.Id.ToString(),
-                ProjectName = project.ProjectName,
-                Description = project.Description,
-                Archive = project.Archive,
-                Status = project.Status,
-                ClientDTO = new ClientDTO { Id = project.Client.Id.ToString(), ClientName = project.Client.ClientName, Adress = project.Client.Adress, City = project.Client.City, Country = project.Client.Country, PostalCode = project.Client.PostalCode },
-                MemberDTO = new GetMemberDTO { Id = project.Member.Id.ToString(), Name = project.Member.Name, Username = project.Member.Username, Email = project.Member.Email, Status = project.Member.Status, Role = project.Member.Role, Hours = project.Member.Hours }
-            });
+                projects = projects.Where(x => x.Name.Contains(parameters.Search));
+            }
+            if (!string.IsNullOrEmpty(parameters.Letter))
+            {
+                projects = projects.Where(x => x.Name.StartsWith(parameters.Letter));
+            }
+            var sort = string.IsNullOrEmpty(parameters.OrderBy) ? "name" : parameters.OrderBy;
+            switch (sort)
+            {
+                case "name":
+                    projects = projects.OrderBy(x => x.Name);
+                    break;
+                case "name_desc":
+                    projects = projects.OrderByDescending(x => x.Name);
+                    break;
+                default:
+                    projects = projects.OrderBy(x => x.Name);
+                    break;
+            }
+            var dtos = projects.ProjectTo<ProjectDTO>(_mapper.ConfigurationProvider);
+            return PaginatedList<ProjectDTO>.Create(dtos, parameters.PageNumber, parameters.PageSize);
         }
-        public async Task CreateAsync(PostProjectDTO projectDTO, CancellationToken cancellationToken = default)
+
+        public Project GetOne(int id)
         {
-            try
-            {
-                var client = projectDTO.ClientId != null ? (await _repositoryManager.ClientRepository.GetByIdAsync(Guid.Parse(projectDTO.ClientId), cancellationToken)) : null;
-                var member = projectDTO.MemberId!= null ? (await _repositoryManager.MemberRepository.GetMemberById(Guid.Parse(projectDTO.MemberId), cancellationToken)) : null;
-                var domainproject = new Project(Guid.NewGuid(),projectDTO.ProjectName,projectDTO.Description,projectDTO.Archive,projectDTO.Status,client,member);
-                await _repositoryManager.ProjectRepository.InsertProject(domainproject,cancellationToken);
-                await _repositoryManager.SaveChangesAsync(cancellationToken);
-            }
-            catch(EntityAlreadyExists)
-            {
-                throw;
-            }
-            catch(Exception)
-            {
-                throw;
-            }
+            return _unitOfWork.ProjectRepository.SingleById(x => x.Id == id);
         }
-        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+
+        public void Update(Project project)
         {
-            try
-            {
-            var projectfordelete = await _repositoryManager.ProjectRepository.GetProjectById(id,cancellationToken);
-             _repositoryManager.ProjectRepository.RemoveProject(projectfordelete);
-            await _repositoryManager.SaveChangesAsync(cancellationToken);
-            }
-            catch(NotFoundException)
-            {
-                throw;
-            }
-            catch(Exception)
-            {
-                throw;
-            }
-        }
-        public async Task<IEnumerable<ProjectDTO>> GetAllAsync(ProjectParams projectParams,CancellationToken cancellationToken = default)
-        {
-        return (await _repositoryManager.ProjectRepository.GetProjectAsync(projectParams,cancellationToken)).Select(project => new ProjectDTO(){
-           Id = project.Id.ToString(),
-           ProjectName = project.ProjectName,
-           Description = project.Description,
-           Archive = project.Archive,
-           Status = project.Status,
-           ClientDTO = new ClientDTO { Id = project.Client.Id.ToString(), ClientName = project.Client.ClientName, Adress = project.Client.Adress, City = project.Client.City, Country = project.Client.Country, PostalCode = project.Client.PostalCode },
-            MemberDTO = new GetMemberDTO { Id = project.Member.Id.ToString(), Name = project.Member.Name, Username = project.Member.Username ,Email = project.Member.Email, Status = project.Member.Status, Role = project.Member.Role, Hours = project.Member.Hours }
-        });
-        }
-        public async Task<ProjectDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-            var project = await _repositoryManager.ProjectRepository.GetProjectById(id,cancellationToken);
-            var projectDTO = new ProjectDTO()
-            {
-           Id = project.Id.ToString(),
-           ProjectName = project.ProjectName,
-           Description = project.Description,
-           Archive = project.Archive,
-           Status = project.Status,
-           ClientDTO = new ClientDTO { Id = project.Client.Id.ToString(), ClientName = project.Client.ClientName, Adress = project.Client.Adress, City = project.Client.City, Country = project.Client.Country, PostalCode = project.Client.PostalCode },
-           MemberDTO = new GetMemberDTO { Id = project.Member.Id.ToString(), Name = project.Member.Name, Username = project.Member.Username, Email = project.Member.Email, Status = project.Member.Status, Role = project.Member.Role, Hours = project.Member.Hours }
-            };
-            return projectDTO;
-            }
-            catch(NotFoundException)
-            {
-                throw;
-            }
-            catch(Exception)
-            {
-                throw;
-            }
-        }
-        public async Task UpdateAsync(Guid id,PostProjectDTO projectDTO,CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var client = projectDTO.ClientId != null?(await _repositoryManager.ClientRepository.GetByIdAsync(Guid.Parse(projectDTO.ClientId), cancellationToken)): null;
-                var member = projectDTO.MemberId!= null?(await _repositoryManager.MemberRepository.GetMemberById(Guid.Parse(projectDTO.MemberId), cancellationToken)): null;
-                var result = (await _repositoryManager.ProjectRepository.GetProjectById(id,cancellationToken)).
-                 UpdatePname(projectDTO.ProjectName)
-                .UpdateDescription(projectDTO.Description).
-                 UpdateArchive(projectDTO.Archive)
-                .UpdateStatus(projectDTO.Status).
-                 UpdateClient(client)
-                .UpdateMember(member);
-                await _repositoryManager.ProjectRepository.UpdateProject(result,cancellationToken);
-                await _repositoryManager.SaveChangesAsync(cancellationToken);
-            }
-            catch(NotFoundException)
-            {
-                throw;
-            }
-            catch(Exception)
-            {
-                throw;
-            }
+            _unitOfWork.ProjectRepository.Update(project);
+            _unitOfWork.SaveChanges();
         }
     }
 }

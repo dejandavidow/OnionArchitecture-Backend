@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Pagination
+﻿namespace Contracts.Pagination
 {
-    public class ClientParams
+    public class QueryParameters
     {
         const int maxPageSize = 50;
-        public string letter { get; set; }
         public int PageNumber { get; set; } = 1;
-        private int _pageSize = 10;
+        private int _pageSize = 5;
         public int PageSize
         {
             get
@@ -23,5 +16,8 @@ namespace Domain.Pagination
                 _pageSize = (value > maxPageSize) ? maxPageSize : value;
             }
         }
+        public string Search { get; set; }
+        public string Letter { get; set; }
+        public string OrderBy { get; set; }
     }
 }

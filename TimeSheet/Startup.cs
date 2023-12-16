@@ -4,19 +4,21 @@ using Domain.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Persistence;
+using Persistence.Repositories;
 using Persistence.Services;
 using Services;
 using Services.Abstractions;
+using Services.MappingProfile;
 using System.Text;
 using TimeSheet.Extensions;
-
 namespace TimeSheet
 {
     public class Startup
@@ -31,60 +33,41 @@ namespace TimeSheet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddAutoMapper(typeof(ServiceProfiles));
             services.Configure<MailSettings>(Configuration.GetSection("EmailConfiguration"));
             services.AddCors();
-            services.AddAuthentication(opt =>
+            services.AddAuthentication(x =>
             {
-                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-                .AddJwtBearer(options =>
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }
+            ).AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = "https://localhost:44381/",
-                        ValidAudience = "https://localhost:44381/",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"))
-                    };
-                });
-
-
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = Configuration["Jwt:Audience"],
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                };
+            });
             services.AddDbContext<RepositoryDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddScoped<IServiceManager, ServiceManager>();
-            services.AddScoped<IRepositoryManager, RepositoryManager>();
+            services.AddIdentity<User, IdentityRole>()
+            .AddEntityFrameworkStores<RepositoryDbContext>()
+            .AddDefaultTokenProviders();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IClientService, ClientService>();
+            services.AddScoped<IProjectService, ProjectService>();
+            services.TryAddScoped<ITimeSheetService, TimeSheetService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IMailService, MailService>();
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TimeSheet", Version = "v1" });
-                var securitySchema = new OpenApiSecurityScheme
-                {
-                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
-                };
-
-                c.AddSecurityDefinition("Bearer", securitySchema);
-
-                var securityRequirement = new OpenApiSecurityRequirement
-                {
-                    { securitySchema, new[] { "Bearer" } }
-                };
-
-                c.AddSecurityRequirement(securityRequirement);
-            });
+            services.AddSwaggerGen();
+            services.AddCors(x => x.AddDefaultPolicy(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("X-Pagination")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -101,12 +84,7 @@ namespace TimeSheet
             app.ConfigureExceptionHandler();
             app.UseHttpsRedirection();
             app.UseRouting();
-            app.UseCors(options => options
-            .WithOrigins(new[] { "http://localhost:3000", "http://localhost:4200" })
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials()
-            );
+            app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

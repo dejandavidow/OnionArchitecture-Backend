@@ -1,17 +1,20 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace Contracts.DTOs
 {
     public class TimeSheetDTO
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Description { get; set; }
-        public float Time { get; set; }
+        public decimal Time { get; set; }
 
-        public float OverTime { get; set; }
-        public string Date { get; set; }
-        public CategoryDTO CategoryDTO { get; set; }
-        public ProjectDTO ProjectDTO { get; set; }
+        public decimal Overtime { get; set; }
+        public DateTime Date { get; set; }
+
+        public string ClientName { get; set; }
+
+        public string ProjectName { get; set; }
+
+        public string CategoryName { get; set; }
     }
 }

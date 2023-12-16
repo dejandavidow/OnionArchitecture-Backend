@@ -1,6 +1,11 @@
-using System.Threading;
-using System.Threading.Tasks;
-public interface IUnitOfWork
+namespace Domain.Repositories
 {
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+    public interface IUnitOfWork
+    {
+        ITimeSheetRepository TimeSheetRepository { get; }
+        ICategoryRepository CategoryRepository { get; }
+        IClientRepository ClientRepository { get; }
+        IProjectRepository ProjectRepository { get; }
+        void SaveChanges();
+    }
 }
