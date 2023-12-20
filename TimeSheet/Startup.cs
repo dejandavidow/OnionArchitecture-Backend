@@ -33,9 +33,12 @@ namespace TimeSheet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<RepositoryDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddIdentity<User, IdentityRole>()
+            .AddEntityFrameworkStores<RepositoryDbContext>()
+            .AddDefaultTokenProviders();
             services.AddAutoMapper(typeof(ServiceProfiles));
             services.Configure<MailSettings>(Configuration.GetSection("EmailConfiguration"));
-            services.AddCors();
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -55,10 +58,6 @@ namespace TimeSheet
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                 };
             });
-            services.AddDbContext<RepositoryDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddIdentity<User, IdentityRole>()
-            .AddEntityFrameworkStores<RepositoryDbContext>()
-            .AddDefaultTokenProviders();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IClientService, ClientService>();
             services.AddScoped<IProjectService, ProjectService>();
@@ -67,7 +66,7 @@ namespace TimeSheet
             services.AddScoped<IMailService, MailService>();
             services.AddControllers();
             services.AddSwaggerGen();
-            services.AddCors(x => x.AddDefaultPolicy(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("X-Pagination")));
+            services.AddCors(x => x.AddDefaultPolicy(x => x.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("X-Pagination")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
