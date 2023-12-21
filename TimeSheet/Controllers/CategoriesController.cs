@@ -1,12 +1,15 @@
 ﻿using Contracts.Pagination;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Services.Abstractions;
+using System.Linq;
 
 namespace TimeSheet.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -29,7 +32,7 @@ namespace TimeSheet.Controllers
                 categories.HasNext,
                 categories.HasPrevious
             };
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+            Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
             return Ok(categories);
         }
         [HttpGet("{id}")]

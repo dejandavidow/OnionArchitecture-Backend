@@ -57,6 +57,7 @@ namespace TimeSheet.Controllers
                 {
                     Username = user.UserName,
                     Token = new JwtSecurityTokenHandler().WriteToken(token),
+                    Name = user.Name
                 });
             }
             return Unauthorized();
